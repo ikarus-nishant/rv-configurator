@@ -1,0 +1,5 @@
+{
+  "name": "Ikarus Delta Configurator",
+  "description": "A premium 3D product configurator for Ikarus Delta, featuring real-time WebGL rendering and AI-powered adventure planning.",
+  "requestFramePermissions": []
+}
