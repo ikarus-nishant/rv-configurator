@@ -53,6 +53,10 @@ const Configurator: React.FC<ConfiguratorProps> = ({ config, setConfig, activeTa
              if (selectedInterior?.price) total += selectedInterior.price;
         }
       }
+      if (cat.id === ConfigCategory.MATERIAL) {
+        const selectedMaterial = cat.options.find(o => config.material === o.id);
+        if (selectedMaterial?.price) total += selectedMaterial.price;
+      }
     });
 
     return total;
@@ -201,7 +205,7 @@ const Configurator: React.FC<ConfiguratorProps> = ({ config, setConfig, activeTa
                     <img 
                       src={option.icon} 
                       alt={option.label}
-                      className="w-16 h-16 rounded object-cover border border-neutral-200 flex-shrink-0 mr-4"
+                      className="w-32 h-20 rounded-md object-cover border border-neutral-200 flex-shrink-0 mr-4 bg-neutral-100"
                     />
                   ) : option.colorCode ? (
                      <div 

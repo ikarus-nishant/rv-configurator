@@ -2,7 +2,7 @@ import React, { useEffect, useRef } from 'react';
 import { CONFIG_DATA } from '../constants';
 import { ConfigCategory } from '../types';
 
-// Declare intrinsic elements to avoid TypeScript errors with custom web components
+// Declare intrinsic elements to avoid TypeScript errors with custom web components and missing standard types
 declare global {
   namespace JSX {
     interface IntrinsicElements {
@@ -15,6 +15,8 @@ declare global {
         'shadow-intensity'?: string;
         [key: string]: any;
       };
+      // Catch-all for other elements (div, span, group, primitive, etc.) to prevent TS errors
+      [elemName: string]: any;
     }
   }
 }
@@ -93,7 +95,7 @@ const ARView: React.FC = () => {
 
       <model-viewer
         ref={modelViewerRef}
-        src="https://dl.dropbox.com/scl/fi/r6lh11ifdqa42wx38vsad/Airstream-27.glb?rlkey=yfpzeiaksppbw9azf6etyj2th&dl=1"
+        src="https://dl.dropbox.com/scl/fi/n893bek5wluovtcl5qtpj/ext.glb?rlkey=9n026wssl8o6kf6sp4iix4lfd&dl=1"
         ar
         ar-modes="webxr scene-viewer quick-look"
         camera-controls

@@ -44,7 +44,7 @@ export const CONFIG_DATA: CategoryData[] = [
       { id: 'urban', label: 'Urban Loft', price: 1500, description: 'High-gloss cabinetry, dark accents, modern tech.' },
       { id: 'lodge', label: 'Mountain Lodge', price: 2500, description: 'Warm walnut, leather seating, cozy textiles.' },
     ],
-    multiSelect: false, // Changed to false for decor themes
+    multiSelect: false, 
   },
   {
     id: ConfigCategory.MATERIAL,
@@ -52,6 +52,7 @@ export const CONFIG_DATA: CategoryData[] = [
       { 
         id: 'aluminum', 
         label: 'Classic Aluminum', 
+        price: 0,
         colorCode: '#E0E0E0',
         icon: 'https://www.dropbox.com/scl/fi/efzaughr2p219kw9sv13e/Classic-Aluminium.webp?rlkey=2j6l24rvfv7igo4jr6gxguxod&dl=1',
         description: 'A professional, bright silver finish with a distinct horizontal brushed metal texture and soft light reflections.'
@@ -59,6 +60,7 @@ export const CONFIG_DATA: CategoryData[] = [
       { 
         id: 'matte_black', 
         label: 'Stealth Matte', 
+        price: 3500,
         colorCode: '#222222',
         icon: 'https://www.dropbox.com/scl/fi/ionjxkl0gx4se9n3tw2w9/Stealth-Matte.webp?rlkey=piof69fli83680h7yj7rfjozn&dl=1',
         description: 'A deep, non-reflective obsidian black with a smooth, velvety surface that absorbs light for a tactical appearance.'
@@ -66,6 +68,7 @@ export const CONFIG_DATA: CategoryData[] = [
       { 
         id: 'satin_white', 
         label: 'Arctic Satin', 
+        price: 2000,
         colorCode: '#F5F5F5',
         icon: 'https://www.dropbox.com/scl/fi/sfbxeleq08pkmjaiv1p7m/Arctic-Satin.webp?rlkey=09acizvlhxm37xc98o1j1v8lm&dl=1',
         description: 'A clean, cool-toned frost silver with a sophisticated low-sheen finish and smooth gradient highlights.'
@@ -73,6 +76,7 @@ export const CONFIG_DATA: CategoryData[] = [
       { 
         id: 'forest_green', 
         label: 'Ranger Green', 
+        price: 2500,
         colorCode: '#2F4F2F',
         icon: 'https://www.dropbox.com/scl/fi/scmxoy52mcrhlovi9wog0/Ranger-Green.webp?rlkey=4aklplq5y1jpjmn2zn7c9k9t4&dl=1',
         description: 'A muted, earthy forest drab with a flat matte texture, designed for a rugged and utilitarian aesthetic.'

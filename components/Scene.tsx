@@ -1,6 +1,6 @@
-import React, { Suspense, useState } from 'react';
+import React, { Suspense, useState, useMemo, useEffect } from 'react';
 import { Canvas } from '@react-three/fiber';
-import { OrbitControls, Environment, ContactShadows, useProgress } from '@react-three/drei';
+import { OrbitControls, Environment, ContactShadows, useProgress, GizmoHelper, GizmoViewport } from '@react-three/drei';
 import { XR, createXRStore, useXR } from '@react-three/xr';
 import ProductModel from './ProductModel';
 import { ProductConfig, ConfigCategory } from '../types';
@@ -43,17 +43,28 @@ interface SceneProps {
 
 interface SceneContentProps extends SceneProps {
   resetTrigger: number;
+  activeWaypoint: string;
+  onWaypointChange: (wp: string) => void;
 }
 
 // Inner Component to handle XR-specific logic
-const SceneContent: React.FC<SceneContentProps> = ({ config, activeTab, resetTrigger }) => {
+const SceneContent: React.FC<SceneContentProps> = ({ config, activeTab, resetTrigger, activeWaypoint, onWaypointChange }) => {
   const mode = useXR(state => state.mode);
   const isPresenting = mode === 'immersive-ar' || mode === 'immersive-vr';
+
+  // Memoize the target to prevent OrbitControls from resetting on every render
+  const controlsTarget = useMemo(() => [0, 1, 0], []);
 
   return (
     <>
       <group position={[0, isPresenting ? -1 : -0.5, isPresenting ? -2 : 0]}>
-        <ProductModel config={config} activeTab={activeTab} resetTrigger={resetTrigger} />
+        <ProductModel 
+          config={config} 
+          activeTab={activeTab} 
+          resetTrigger={resetTrigger}
+          activeWaypoint={activeWaypoint}
+          onWaypointChange={onWaypointChange}
+        />
         <ContactShadows 
           opacity={0.4} 
           scale={30} 
@@ -75,14 +86,19 @@ const SceneContent: React.FC<SceneContentProps> = ({ config, activeTab, resetTri
 
       {/* Disable Orbit Controls when in AR to allow user to walk around */}
       {!isPresenting && (
-        <OrbitControls 
-          makeDefault 
-          minPolarAngle={0} 
-          maxPolarAngle={Math.PI / 2} 
-          enableZoom={true} 
-          enablePan={true}
-          target={[0, 1, 0]} 
-        />
+        <>
+            <OrbitControls 
+            makeDefault 
+            minPolarAngle={0} 
+            maxPolarAngle={Math.PI / 2} 
+            enableZoom={true} 
+            enablePan={true}
+            target={controlsTarget} 
+            />
+            <GizmoHelper alignment="bottom-right" margin={[80, 80]}>
+                <GizmoViewport axisColors={['#ba3b32', '#2f7f4f', '#3b5b9d']} labelColor="black" />
+            </GizmoHelper>
+        </>
       )}
 
       {/* Hide Environment background in AR so the camera feed shows through */}
@@ -97,9 +113,19 @@ const SceneContent: React.FC<SceneContentProps> = ({ config, activeTab, resetTri
 const Scene: React.FC<SceneProps> = ({ config, activeTab }) => {
   const [resetTrigger, setResetTrigger] = useState(0);
   const [showQR, setShowQR] = useState(false);
+  const [activeWaypoint, setActiveWaypoint] = useState('Waypoint1');
+
+  // Reset waypoint when entering interior tab
+  useEffect(() => {
+    if (activeTab === ConfigCategory.INTERIOR) {
+      setActiveWaypoint('Waypoint1');
+    }
+  }, [activeTab]);
 
   const qrUrl = encodeURIComponent(`${window.location.origin}${window.location.pathname}?ar=true&material=${config.material}`);
   const qrImageSrc = `https://api.qrserver.com/v1/create-qr-code/?size=250x250&data=${qrUrl}&color=3f1310`;
+
+  const waypoints = ['Waypoint1', 'Waypoint2', 'Waypoint3'];
 
   return (
     <div className="w-full h-full bg-[#f0f0f0] relative">
@@ -118,6 +144,29 @@ const Scene: React.FC<SceneProps> = ({ config, activeTab }) => {
           className="w-24 md:w-32 lg:w-40 object-contain"
         />
        </a>
+
+       {/* Interior Navigation Buttons Overlay - Visible whenever in Interior Tab */}
+      {activeTab === ConfigCategory.INTERIOR && (
+        <div className="absolute left-6 top-1/2 -translate-y-1/2 flex flex-col gap-4 z-20 pointer-events-auto">
+          {waypoints.map((wp, index) => {
+            const isActive = activeWaypoint === wp;
+            return (
+              <button
+                key={wp}
+                onClick={() => setActiveWaypoint(wp)}
+                className={`w-12 h-12 md:w-16 md:h-16 border-2 flex items-center justify-center transition-all duration-300 shadow-md backdrop-blur-sm
+                  ${isActive 
+                    ? 'border-medium-carmine-600 bg-white text-medium-carmine-700' 
+                    : 'border-white/60 bg-white/20 hover:bg-white/40 text-neutral-600 hover:border-white'
+                  }`}
+                aria-label={`Go to view ${index + 1}`}
+              >
+                 <span className="font-medium text-lg">{index + 1}</span>
+              </button>
+            );
+          })}
+        </div>
+      )}
 
       {/* Action Buttons Overlay - Styled to match Configurator */}
       <div className="absolute bottom-8 left-1/2 -translate-x-1/2 z-20 flex items-center gap-4 w-full justify-center pointer-events-none">
@@ -164,10 +213,16 @@ const Scene: React.FC<SceneProps> = ({ config, activeTab }) => {
        )}
 
        {/* 3D Canvas */}
-      <Canvas shadows dpr={[1, 2]} camera={{ position: [0, 3, 16], fov: 22 }}>
+      <Canvas shadows dpr={[1, 2]} camera={{ position: [0, 3, 16], fov: 22 }} resize={{ debounce: 0 }}>
         <XR store={store}>
           <Suspense fallback={null}>
-            <SceneContent config={config} activeTab={activeTab} resetTrigger={resetTrigger} />
+            <SceneContent 
+              config={config} 
+              activeTab={activeTab} 
+              resetTrigger={resetTrigger} 
+              activeWaypoint={activeWaypoint}
+              onWaypointChange={setActiveWaypoint}
+            />
           </Suspense>
         </XR>
       </Canvas>
