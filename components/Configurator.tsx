@@ -68,8 +68,9 @@ const Configurator: React.FC<ConfiguratorProps> = ({ config, setConfig, activeTa
         newConfig.size = optionId as any;
         
         // Find the first valid floorplan for the new size
-        const sizeCategory = CONFIG_DATA.find(c => c.id === ConfigCategory.SIZE);
-        const floorplanSection = sizeCategory?.sections.find(s => s.stateKey === 'floorplan');
+        // Look in FLOORPLAN category now, not SIZE
+        const floorplanCategory = CONFIG_DATA.find(c => c.id === ConfigCategory.FLOORPLAN);
+        const floorplanSection = floorplanCategory?.sections.find(s => s.stateKey === 'floorplan');
         const defaultFloorplan = floorplanSection?.options.find(o => o.availableForSize?.includes(optionId))?.id;
         
         if (defaultFloorplan) {

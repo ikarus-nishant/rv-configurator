@@ -31,7 +31,12 @@ export const CONFIG_DATA: CategoryData[] = [
             icon: 'https://www.dropbox.com/scl/fi/1ao0ei7erhm1iyj4j97b5/28ext.png?rlkey=t4lo8fie8t9vmp4dt1nngvy5h&dl=1'
           },
         ]
-      },
+      }
+    ]
+  },
+  {
+    id: ConfigCategory.FLOORPLAN,
+    sections: [
       {
         title: 'Select Floorplan',
         stateKey: 'floorplan',

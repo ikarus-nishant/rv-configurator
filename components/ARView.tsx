@@ -1,25 +1,7 @@
+
 import React, { useEffect, useRef } from 'react';
 import { CONFIG_DATA } from '../constants';
 import { ConfigCategory } from '../types';
-
-// Declare intrinsic elements to avoid TypeScript errors with custom web components and missing standard types
-declare global {
-  namespace JSX {
-    interface IntrinsicElements {
-      'model-viewer': React.DetailedHTMLProps<React.HTMLAttributes<HTMLElement>, HTMLElement> & {
-        src?: string;
-        ar?: boolean;
-        'ar-modes'?: string;
-        'camera-controls'?: boolean;
-        'tone-mapping'?: string;
-        'shadow-intensity'?: string;
-        [key: string]: any;
-      };
-      // Catch-all for other elements (div, span, group, primitive, etc.) to prevent TS errors
-      [elemName: string]: any;
-    }
-  }
-}
 
 const ARView: React.FC = () => {
   const modelViewerRef = useRef<any>(null);

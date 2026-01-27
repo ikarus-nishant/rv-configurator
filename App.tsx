@@ -26,7 +26,8 @@ function App() {
 
   // Mapping for cleaner labels in the top bar
   const stepLabels: Record<string, string> = {
-    [ConfigCategory.SIZE]: 'Model',
+    [ConfigCategory.SIZE]: 'Size',
+    [ConfigCategory.FLOORPLAN]: 'Floorplan',
     [ConfigCategory.EXTERIOR]: 'Exterior',
     [ConfigCategory.INTERIOR]: 'Interior',
     [ConfigCategory.SUMMARY]: 'Summary'

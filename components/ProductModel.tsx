@@ -1,7 +1,8 @@
+
 import React, { useEffect, useRef, useState, Suspense } from 'react';
-import { useGLTF, Html } from '@react-three/drei';
+import { useGLTF, Html, OrthographicCamera } from '@react-three/drei';
 import { useThree, useFrame } from '@react-three/fiber';
-import * as THREE from 'three';
+import { Mesh, Vector3, Object3D, PerspectiveCamera, Quaternion } from 'three';
 import { OrbitControls as OrbitControlsImpl } from 'three-stdlib';
 import { ProductConfig, ConfigCategory } from '../types';
 import { CONFIG_DATA } from '../constants';
@@ -16,6 +17,7 @@ interface ProductModelProps {
 
 const EXTERIOR_URL = 'https://dl.dropbox.com/scl/fi/n893bek5wluovtcl5qtpj/ext.glb?rlkey=9n026wssl8o6kf6sp4iix4lfd&dl=1';
 const INTERIOR_URL = 'https://dl.dropbox.com/scl/fi/u2jgaow3rbixi8q6lnufr/int.glb?rlkey=eidbdbto55qmngvzs9xnk4p5j&dl=1';
+const FLOORPLAN_URL = 'https://dl.dropbox.com/scl/fi/yn7crt148zi6c3ahpdi8g/fp.glb?rlkey=9cgs7g8t8e74j7b40frp4euc2&dl=1';
 
 const ExteriorModel: React.FC<{ config: ProductConfig }> = ({ config }) => {
   const { scene } = useGLTF(EXTERIOR_URL);
@@ -33,7 +35,7 @@ const ExteriorModel: React.FC<{ config: ProductConfig }> = ({ config }) => {
     const exteriorIds = exteriorSection?.options.map(o => o.id) || [];
 
     scene.traverse((child) => {
-      if (child instanceof THREE.Mesh) {
+      if (child instanceof Mesh) {
         child.castShadow = true;
         child.receiveShadow = true;
 
@@ -45,18 +47,18 @@ const ExteriorModel: React.FC<{ config: ProductConfig }> = ({ config }) => {
           child.visible = config.exterior.includes(associatedOptionId);
         }
 
-        if (child.material && child.material.name === 'Steel') {
-          child.material.color.set(targetColor);
+        if (child.material && (child.material as any).name === 'Steel') {
+          (child.material as any).color.set(targetColor);
           
           if (config.material === 'matte_black') {
-            child.material.roughness = 0.9;
-            child.material.metalness = 0.1;
+            (child.material as any).roughness = 0.9;
+            (child.material as any).metalness = 0.1;
           } else if (config.material === 'aluminum') {
-            child.material.roughness = 0.3;
-            child.material.metalness = 1.0;
+            (child.material as any).roughness = 0.3;
+            (child.material as any).metalness = 1.0;
           } else {
-             child.material.roughness = 0.5;
-             child.material.metalness = 0.5;
+             (child.material as any).roughness = 0.5;
+             (child.material as any).metalness = 0.5;
           }
         }
       }
@@ -66,9 +68,14 @@ const ExteriorModel: React.FC<{ config: ProductConfig }> = ({ config }) => {
   return <primitive object={scene} />;
 };
 
+const FloorplanModel: React.FC = () => {
+  const { scene } = useGLTF(FLOORPLAN_URL);
+  return <primitive object={scene} />;
+};
+
 interface InteriorModelProps {
   activeWaypoint: string;
-  onTargetFound: (target: THREE.Object3D) => void;
+  onTargetFound: (target: Object3D) => void;
   onUserClick: (waypoint: string) => void;
 }
 
@@ -119,15 +126,19 @@ const InteriorModel: React.FC<InteriorModelProps> = ({ activeWaypoint, onTargetF
 
 const ProductModel: React.FC<ProductModelProps> = ({ config, activeTab, resetTrigger, activeWaypoint = 'Waypoint1', onWaypointChange }) => {
   const { camera, controls } = useThree();
-  const [interiorTarget, setInteriorTarget] = useState<THREE.Object3D | null>(null);
+  const [interiorTarget, setInteriorTarget] = useState<Object3D | null>(null);
   
   // -- Transition Logic Start --
-  const showInteriorProp = activeTab === ConfigCategory.INTERIOR;
-  const [displayedView, setDisplayedView] = useState<'exterior' | 'interior'>(showInteriorProp ? 'interior' : 'exterior');
+  // Determine target view based on tab
+  let targetView: 'exterior' | 'interior' | 'floorplan' = 'exterior';
+  if (activeTab === ConfigCategory.INTERIOR) targetView = 'interior';
+  else if (activeTab === ConfigCategory.FLOORPLAN) targetView = 'floorplan';
+
+  // State to handle current display
+  const [displayedView, setDisplayedView] = useState<'exterior' | 'interior' | 'floorplan'>(targetView);
   const [isFading, setIsFading] = useState(false);
 
   useEffect(() => {
-    const targetView = showInteriorProp ? 'interior' : 'exterior';
     if (targetView !== displayedView) {
       // 1. Start Fade Out
       setIsFading(true);
@@ -138,8 +149,8 @@ const ProductModel: React.FC<ProductModelProps> = ({ config, activeTab, resetTri
         setDisplayedView(targetView);
         
         // 3. Start Fade In logic
-        if (targetView === 'exterior') {
-          // For exterior, we fade in after a short delay
+        // For exterior or floorplan, we fade in after a short delay
+        if (targetView === 'exterior' || targetView === 'floorplan') {
           const t2 = setTimeout(() => {
             setIsFading(false);
           }, 100);
@@ -150,64 +161,87 @@ const ProductModel: React.FC<ProductModelProps> = ({ config, activeTab, resetTri
 
       return () => clearTimeout(t1);
     }
-  }, [showInteriorProp, displayedView]);
+  }, [targetView, displayedView]);
 
   const showInterior = displayedView === 'interior';
+  const showFloorplan = displayedView === 'floorplan';
+  const showExterior = displayedView === 'exterior';
   // -- Transition Logic End --
 
   // Camera State
-  const defaultPos = new THREE.Vector3(0, 3, 16);
-  const defaultTarget = new THREE.Vector3(0, 1, 0);
+  const defaultPos = new Vector3(0, 3, 16);
+  const defaultTarget = new Vector3(0, 1, 0);
 
   // Saved Exterior State
-  const savedExteriorPos = useRef(new THREE.Vector3().copy(defaultPos));
-  const savedExteriorTarget = useRef(new THREE.Vector3().copy(defaultTarget));
+  const savedExteriorPos = useRef(new Vector3().copy(defaultPos));
+  const savedExteriorTarget = useRef(new Vector3().copy(defaultTarget));
 
   // Interior Navigation State
   const isInteriorTransitioning = useRef(false);
-  const interiorTargetPos = useRef(new THREE.Vector3());
-  const interiorLookAt = useRef(new THREE.Vector3());
+  const interiorTargetPos = useRef(new Vector3());
+  const interiorLookAt = useRef(new Vector3());
 
-  // Handle Mode Switching Camera Logic (Exterior Restore)
+  // Handle Mode Switching Camera Logic
   useEffect(() => {
     const orb = controls as unknown as OrbitControlsImpl;
     if (!orb) return;
 
-    if (showInterior) {
-      // Transitioning TO Interior
-      // Save current exterior state before unmounting exterior
-      savedExteriorPos.current.copy(camera.position);
-      savedExteriorTarget.current.copy(orb.target);
-    } else {
-      // Transitioning TO Exterior
-      // Restore exterior state immediately (hidden behind fade)
-      camera.position.copy(savedExteriorPos.current);
-      orb.target.copy(savedExteriorTarget.current);
+    if (showFloorplan) {
+      // Switching TO Floorplan
+      orb.target.set(0, 0, 0);
+      orb.update();
       
-      if (camera instanceof THREE.PerspectiveCamera) {
+    } else if (showInterior) {
+      // Switching TO Interior
+      // Saved exterior state handled by useFrame before transition
+    } else {
+      // Switching TO Exterior
+      // Always reset to default position to ensure object is centered
+      camera.position.copy(defaultPos);
+      orb.target.copy(defaultTarget);
+      
+      if (camera instanceof PerspectiveCamera) {
           camera.fov = 22;
           camera.updateProjectionMatrix();
       }
       orb.update();
       isInteriorTransitioning.current = false;
     }
-  }, [showInterior, controls, camera]);
+  }, [showFloorplan, showInterior, controls, camera]);
+
+  // Handle Tab Change within Exterior Views (Size <-> Exterior <-> Summary)
+  useEffect(() => {
+    // If we are staying within exterior view but changing tabs, force reset
+    if (targetView === 'exterior' && displayedView === 'exterior') {
+      const orb = controls as unknown as OrbitControlsImpl;
+      if (!orb) return;
+
+      camera.position.copy(defaultPos);
+      orb.target.copy(defaultTarget);
+      
+      if (camera instanceof PerspectiveCamera) {
+          camera.fov = 22;
+          camera.updateProjectionMatrix();
+      }
+      orb.update();
+    }
+  }, [activeTab, targetView, displayedView, controls, camera]);
 
   // Handle Interior Target Found / Changed
   useEffect(() => {
     if (showInterior && interiorTarget) {
       const orb = controls as unknown as OrbitControlsImpl;
       
-      const worldPos = new THREE.Vector3();
+      const worldPos = new Vector3();
       interiorTarget.getWorldPosition(worldPos);
       
-      const quaternion = new THREE.Quaternion();
+      const quaternion = new Quaternion();
       interiorTarget.getWorldQuaternion(quaternion);
-      const forward = new THREE.Vector3(0, 0, 1).applyQuaternion(quaternion);
+      const forward = new Vector3(0, 0, 1).applyQuaternion(quaternion);
       const targetCenter = worldPos.clone().add(forward.multiplyScalar(0.1));
 
       // Always ensure FOV is correct for interior
-      if (camera instanceof THREE.PerspectiveCamera) {
+      if (camera instanceof PerspectiveCamera) {
         const currentFocalLength = camera.getFocalLength();
         if (Math.abs(currentFocalLength - 25) > 0.1) {
             camera.setFocalLength(25);
@@ -235,7 +269,7 @@ const ProductModel: React.FC<ProductModelProps> = ({ config, activeTab, resetTri
 
   // Handle Reset Trigger
   useEffect(() => {
-    if (resetTrigger && resetTrigger > 0 && !showInterior) {
+    if (resetTrigger && resetTrigger > 0 && showExterior) {
       const orb = controls as unknown as OrbitControlsImpl;
 
       camera.position.copy(defaultPos);
@@ -244,13 +278,13 @@ const ProductModel: React.FC<ProductModelProps> = ({ config, activeTab, resetTri
       savedExteriorPos.current.copy(defaultPos);
       savedExteriorTarget.current.copy(defaultTarget);
       
-      if (camera instanceof THREE.PerspectiveCamera) {
+      if (camera instanceof PerspectiveCamera) {
           camera.fov = 22;
           camera.updateProjectionMatrix();
       }
       orb.update();
     }
-  }, [resetTrigger, showInterior, controls, camera]);
+  }, [resetTrigger, showExterior, controls, camera]);
 
   useFrame((state, delta) => {
     const orb = controls as unknown as OrbitControlsImpl;
@@ -267,10 +301,8 @@ const ProductModel: React.FC<ProductModelProps> = ({ config, activeTab, resetTri
         }
     }
 
-    // Save exterior state when not in interior and not currently transitioning scenes
-    // Added Safety Check: Ensure camera position is valid (not NaN) before saving
-    // This prevents "vanishing" bugs during resizing where aspect ratio might temporarily be 0
-    if (!showInterior && orb.enabled && !isFading) {
+    // Save exterior state when in Exterior view
+    if (showExterior && orb.enabled && !isFading) {
         if (!isNaN(state.camera.position.x) && !isNaN(orb.target.x)) {
             savedExteriorPos.current.copy(state.camera.position);
             savedExteriorTarget.current.copy(orb.target);
@@ -293,7 +325,22 @@ const ProductModel: React.FC<ProductModelProps> = ({ config, activeTab, resetTri
         />
       </Html>
 
-      {!showInterior && <ExteriorModel config={config} />}
+      {showExterior && <ExteriorModel config={config} />}
+      
+      {showFloorplan && (
+        <>
+            <FloorplanModel />
+            <OrthographicCamera 
+                makeDefault 
+                position={[0, 50, 0]} 
+                zoom={60} 
+                near={0.1} 
+                far={1000}
+                onUpdate={c => c.lookAt(0, 0, 0)}
+            />
+        </>
+      )}
+
       {showInterior && (
         <Suspense fallback={null}>
           <InteriorModel 
@@ -307,7 +354,8 @@ const ProductModel: React.FC<ProductModelProps> = ({ config, activeTab, resetTri
   );
 };
 
-// Only preload Exterior to optimize initial load and memory
+// Preload models
 useGLTF.preload(EXTERIOR_URL);
+useGLTF.preload(FLOORPLAN_URL);
 
 export default ProductModel;

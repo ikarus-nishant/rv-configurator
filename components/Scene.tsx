@@ -1,3 +1,4 @@
+
 import React, { Suspense, useState, useMemo, useEffect } from 'react';
 import { Canvas } from '@react-three/fiber';
 import { OrbitControls, Environment, ContactShadows, useProgress, GizmoHelper, GizmoViewport } from '@react-three/drei';
@@ -54,6 +55,8 @@ const SceneContent: React.FC<SceneContentProps> = ({ config, activeTab, resetTri
 
   // Memoize the target to prevent OrbitControls from resetting on every render
   const controlsTarget = useMemo(() => [0, 1, 0], []);
+  
+  const isFloorplan = activeTab === ConfigCategory.FLOORPLAN;
 
   return (
     <>
@@ -87,17 +90,21 @@ const SceneContent: React.FC<SceneContentProps> = ({ config, activeTab, resetTri
       {/* Disable Orbit Controls when in AR to allow user to walk around */}
       {!isPresenting && (
         <>
+            {/* @ts-ignore */}
             <OrbitControls 
-            makeDefault 
-            minPolarAngle={0} 
-            maxPolarAngle={Math.PI / 2} 
-            enableZoom={true} 
-            enablePan={true}
-            target={controlsTarget} 
+                makeDefault 
+                minPolarAngle={0} 
+                maxPolarAngle={isFloorplan ? 0 : Math.PI / 2} 
+                enableZoom={true} 
+                enablePan={true}
+                enableRotate={!isFloorplan} // Disable rotation for strict floorplan view
+                target={controlsTarget} 
             />
-            <GizmoHelper alignment="bottom-right" margin={[80, 80]}>
-                <GizmoViewport axisColors={['#ba3b32', '#2f7f4f', '#3b5b9d']} labelColor="black" />
-            </GizmoHelper>
+            {!isFloorplan && (
+                <GizmoHelper alignment="bottom-right" margin={[80, 80]}>
+                    <GizmoViewport axisColors={['#ba3b32', '#2f7f4f', '#3b5b9d']} labelColor="black" />
+                </GizmoHelper>
+            )}
         </>
       )}
 
