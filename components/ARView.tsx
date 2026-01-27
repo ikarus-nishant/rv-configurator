@@ -36,8 +36,10 @@ const ARView: React.FC = () => {
 
       // Apply Material Configuration
       if (materialId) {
-        const materialData = CONFIG_DATA.find(c => c.id === ConfigCategory.MATERIAL)
-          ?.options.find(o => o.id === materialId);
+        // Find material data in new structure
+        const materialSection = CONFIG_DATA.find(c => c.id === ConfigCategory.EXTERIOR)
+          ?.sections.find(s => s.stateKey === 'material');
+        const materialData = materialSection?.options.find(o => o.id === materialId);
         
         if (materialData?.colorCode) {
           const material = modelViewer.model.materials.find((m: any) => m.name === 'Steel');

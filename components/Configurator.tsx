@@ -35,49 +35,62 @@ const Configurator: React.FC<ConfiguratorProps> = ({ config, setConfig, activeTa
   const calculateTotal = () => {
     let total = 0;
     
-    // Base price from Size
-    const sizeOption = CONFIG_DATA.find(c => c.id === ConfigCategory.SIZE)?.options.find(o => o.id === config.size);
-    if (sizeOption?.price) total += sizeOption.price;
-
-    // Add-ons
-    CONFIG_DATA.forEach(cat => {
-      if (cat.id === ConfigCategory.EXTERIOR) {
-        cat.options.forEach(opt => {
-          if (config.exterior.includes(opt.id) && opt.price) total += opt.price;
+    CONFIG_DATA.forEach(category => {
+      category.sections.forEach(section => {
+        section.options.forEach(option => {
+          const configValue = config[section.stateKey];
+          
+          if (Array.isArray(configValue)) {
+            // Multi-select (Add-ons, etc)
+            if (configValue.includes(option.id) && option.price) {
+              total += option.price;
+            }
+          } else {
+            // Single select (Size, Material, etc)
+            if (configValue === option.id && option.price) {
+              total += option.price;
+            }
+          }
         });
-      }
-      if (cat.id === ConfigCategory.INTERIOR) {
-        // Find selected interior option (now single select logic in constants, but check data structure)
-        if (config.interior.length > 0) {
-             const selectedInterior = cat.options.find(o => config.interior.includes(o.id));
-             if (selectedInterior?.price) total += selectedInterior.price;
-        }
-      }
-      if (cat.id === ConfigCategory.MATERIAL) {
-        const selectedMaterial = cat.options.find(o => config.material === o.id);
-        if (selectedMaterial?.price) total += selectedMaterial.price;
-      }
+      });
     });
 
     return total;
   };
 
-  const handleOptionSelect = (categoryId: ConfigCategory, optionId: string) => {
+  const handleOptionSelect = (stateKey: keyof ProductConfig, optionId: string, multiSelect: boolean) => {
     setConfig(prev => {
       const newConfig = { ...prev };
-      
-      if (categoryId === ConfigCategory.SIZE) {
+      const currentValue = prev[stateKey];
+
+      // Handle Size Change specifically to reset Floorplan
+      if (stateKey === 'size' && optionId !== prev.size) {
         newConfig.size = optionId as any;
-      } else if (categoryId === ConfigCategory.MATERIAL) {
-        newConfig.material = optionId as any;
-      } else if (categoryId === ConfigCategory.EXTERIOR) {
-        const current = prev.exterior;
-        newConfig.exterior = current.includes(optionId) 
-          ? current.filter(id => id !== optionId)
-          : [...current, optionId];
-      } else if (categoryId === ConfigCategory.INTERIOR) {
-        // Interior is now single select for Decor theme
-        newConfig.interior = [optionId];
+        
+        // Find the first valid floorplan for the new size
+        const sizeCategory = CONFIG_DATA.find(c => c.id === ConfigCategory.SIZE);
+        const floorplanSection = sizeCategory?.sections.find(s => s.stateKey === 'floorplan');
+        const defaultFloorplan = floorplanSection?.options.find(o => o.availableForSize?.includes(optionId))?.id;
+        
+        if (defaultFloorplan) {
+          newConfig.floorplan = defaultFloorplan;
+        }
+        return newConfig;
+      }
+
+      if (multiSelect && Array.isArray(currentValue)) {
+        // Toggle logic for arrays
+        const newArray = currentValue.includes(optionId)
+          ? currentValue.filter(id => id !== optionId)
+          : [...currentValue, optionId];
+        (newConfig[stateKey] as string[]) = newArray;
+      } else {
+        // Single select logic
+        if (Array.isArray(currentValue)) {
+           (newConfig[stateKey] as string[]) = [optionId];
+        } else {
+           (newConfig[stateKey] as any) = optionId;
+        }
       }
       return newConfig;
     });
@@ -128,17 +141,35 @@ const Configurator: React.FC<ConfiguratorProps> = ({ config, setConfig, activeTa
     setIsSuccessOpen(true);
   };
 
+  // Helper to find label and price for summary
+  const getSelectedOptionDetails = (stateKey: keyof ProductConfig) => {
+    const value = config[stateKey];
+    let foundOptions: { label: string, price: number }[] = [];
+
+    CONFIG_DATA.forEach(cat => {
+      cat.sections.forEach(sec => {
+        if (sec.stateKey === stateKey) {
+          sec.options.forEach(opt => {
+            if (Array.isArray(value)) {
+              if (value.includes(opt.id)) foundOptions.push({ label: opt.label, price: opt.price || 0 });
+            } else {
+              if (value === opt.id) foundOptions.push({ label: opt.label, price: opt.price || 0 });
+            }
+          });
+        }
+      });
+    });
+    return foundOptions;
+  };
+
   return (
     <>
       <div className="flex flex-col h-full bg-white text-neutral-900 overflow-hidden shadow-2xl relative z-0">
-        {/* Header */}
-        <div className="p-6 border-b border-neutral-100">
-          <h1 className="text-2xl font-light tracking-tight">Flying <span className="font-semibold text-medium-carmine-700">Cloud</span></h1>
-          <p className="text-xs text-neutral-400 mt-1 uppercase tracking-wider">Travel Trailer</p>
-        </div>
+        {/* Header Removed as per request */}
+        {/* <div className="p-8 border-b border-neutral-100 flex-none">...</div> */}
 
-        {/* Tabs with Arrows */}
-        <div className="flex items-center border-b border-neutral-100 bg-white relative">
+        {/* Tabs with Arrows - HIDDEN ON DESKTOP */}
+        <div className="flex lg:hidden items-center border-b border-neutral-100 bg-white relative flex-none">
           <button 
             onClick={() => scrollTabs('left')}
             className="p-4 text-neutral-400 hover:text-medium-carmine-600 hover:bg-neutral-50 transition-colors z-10 focus:outline-none"
@@ -157,7 +188,7 @@ const Configurator: React.FC<ConfiguratorProps> = ({ config, setConfig, activeTa
               <button
                 key={cat.id}
                 onClick={() => setActiveTab(cat.id)}
-                className={`px-6 py-4 text-sm font-medium whitespace-nowrap transition-colors duration-200 relative shrink-0
+                className={`px-6 py-4 text-xs font-bold uppercase tracking-widest whitespace-nowrap transition-colors duration-200 relative shrink-0
                   ${activeTab === cat.id ? 'text-medium-carmine-700' : 'text-neutral-400 hover:text-neutral-600'}
                 `}
               >
@@ -181,67 +212,148 @@ const Configurator: React.FC<ConfiguratorProps> = ({ config, setConfig, activeTa
         </div>
 
         {/* Options Area */}
-        <div className="flex-1 overflow-y-auto custom-scrollbar p-6 space-y-4">
-          <h2 className="text-lg font-light mb-4">{activeTab}</h2>
+        <div className="flex-1 overflow-y-auto custom-scrollbar p-6 space-y-8">
+          <h2 className="text-sm font-bold uppercase tracking-widest mb-4 lg:hidden text-neutral-900">{activeTab}</h2>
           
-          <div className="grid grid-cols-1 gap-3">
-            {activeCategoryData?.options.map((option) => {
-              const isSelected = 
-                activeTab === ConfigCategory.SIZE ? config.size === option.id :
-                activeTab === ConfigCategory.MATERIAL ? config.material === option.id :
-                activeTab === ConfigCategory.EXTERIOR ? config.exterior.includes(option.id) :
-                activeTab === ConfigCategory.INTERIOR ? config.interior.includes(option.id) : false;
-
-              return (
-                <button
-                  key={option.id}
-                  onClick={() => handleOptionSelect(activeTab, option.id)}
-                  className={`group flex items-start p-4 border rounded-lg text-left transition-all duration-200 w-full
-                    ${isSelected ? 'border-medium-carmine-600 bg-medium-carmine-50 ring-1 ring-medium-carmine-600' : 'border-neutral-200 hover:border-neutral-400'}
-                  `}
-                >
-                  {/* Icon or Color Circle */}
-                  {option.icon ? (
-                    <img 
-                      src={option.icon} 
-                      alt={option.label}
-                      className="w-32 h-20 rounded-md object-cover border border-neutral-200 flex-shrink-0 mr-4 bg-neutral-100"
-                    />
-                  ) : option.colorCode ? (
-                     <div 
-                        className="w-8 h-8 rounded-full border border-neutral-200 shadow-sm flex-shrink-0 mr-4" 
-                        style={{ backgroundColor: option.colorCode }}
-                     />
-                  ) : null}
-
-                  <div className="flex-1 min-w-0">
-                    <div className="flex justify-between items-start">
-                      <div className="font-medium text-sm text-neutral-900">{option.label}</div>
-                      {option.price !== undefined && (
-                        <div className="text-sm font-medium text-neutral-900 ml-2 whitespace-nowrap">
-                          {option.price === 0 ? 'Included' : `+$${option.price.toLocaleString()}`}
-                        </div>
-                      )}
-                    </div>
-                    
-                    {option.description && (
-                      <div className="text-xs text-neutral-500 mt-1 leading-relaxed">
-                        {option.description}
+          {activeTab === ConfigCategory.SUMMARY ? (
+            /* Summary View */
+            <div className="space-y-8 animate-[fadeIn_0.3s_ease-out]">
+              <div>
+                <h3 className="text-xs text-neutral-400 uppercase tracking-widest font-medium mb-4 pb-2 border-b border-neutral-100">Configuration Details</h3>
+                
+                <div className="space-y-4">
+                   {/* Model */}
+                   <div className="flex justify-between items-start">
+                      <div>
+                         <span className="block text-sm font-bold text-neutral-900 uppercase tracking-wider">Model</span>
+                         <span className="text-sm text-neutral-600">{getSelectedOptionDetails('size')[0]?.label}</span>
                       </div>
-                    )}
-                  </div>
-                </button>
-              );
-            })}
-          </div>
+                      <span className="text-sm font-medium text-neutral-900">${getSelectedOptionDetails('size')[0]?.price.toLocaleString()}</span>
+                   </div>
+
+                   {/* Floorplan */}
+                   <div className="flex justify-between items-start">
+                      <div>
+                         <span className="block text-sm font-bold text-neutral-900 uppercase tracking-wider">Floorplan</span>
+                         <span className="text-sm text-neutral-600">{getSelectedOptionDetails('floorplan')[0]?.label}</span>
+                      </div>
+                      <span className="text-sm font-medium text-neutral-900">
+                         {getSelectedOptionDetails('floorplan')[0]?.price === 0 ? 'Included' : `+$${getSelectedOptionDetails('floorplan')[0]?.price.toLocaleString()}`}
+                      </span>
+                   </div>
+
+                   {/* Finish */}
+                   <div className="flex justify-between items-start">
+                      <div>
+                         <span className="block text-sm font-bold text-neutral-900 uppercase tracking-wider">Shell Finish</span>
+                         <span className="text-sm text-neutral-600">{getSelectedOptionDetails('material')[0]?.label}</span>
+                      </div>
+                      <span className="text-sm font-medium text-neutral-900">
+                        {getSelectedOptionDetails('material')[0]?.price === 0 ? 'Included' : `+$${getSelectedOptionDetails('material')[0]?.price.toLocaleString()}`}
+                      </span>
+                   </div>
+
+                   {/* Interior */}
+                   <div className="flex justify-between items-start">
+                      <div>
+                         <span className="block text-sm font-bold text-neutral-900 uppercase tracking-wider">Interior</span>
+                         <span className="text-sm text-neutral-600">{getSelectedOptionDetails('interior')[0]?.label}</span>
+                      </div>
+                      <span className="text-sm font-medium text-neutral-900">
+                        {getSelectedOptionDetails('interior')[0]?.price === 0 ? 'Included' : `+$${getSelectedOptionDetails('interior')[0]?.price.toLocaleString()}`}
+                      </span>
+                   </div>
+
+                   {/* Add-ons */}
+                   {getSelectedOptionDetails('exterior').length > 0 && (
+                      <div className="pt-2">
+                        <span className="block text-sm font-bold text-neutral-900 uppercase tracking-wider mb-2">Add-ons</span>
+                        <div className="space-y-2">
+                           {getSelectedOptionDetails('exterior').map((opt, i) => (
+                              <div key={i} className="flex justify-between items-start pl-2 border-l-2 border-neutral-100">
+                                <span className="text-sm text-neutral-600">{opt.label}</span>
+                                <span className="text-sm font-medium text-neutral-900">+${opt.price.toLocaleString()}</span>
+                              </div>
+                           ))}
+                        </div>
+                      </div>
+                   )}
+                </div>
+              </div>
+            </div>
+          ) : (
+            /* Standard Config View */
+            activeCategoryData?.sections.map((section, index) => (
+              <div key={index} className="space-y-3">
+                 {section.title && (
+                   <h3 className="text-xs font-bold uppercase tracking-widest text-neutral-500 mb-3">{section.title}</h3>
+                 )}
+                 
+                 <div className="grid grid-cols-1 gap-3">
+                  {section.options.map((option) => {
+                    // Check availability dependency (e.g., Floorplan depends on Size)
+                    if (option.availableForSize && !option.availableForSize.includes(config.size)) {
+                        return null;
+                    }
+
+                    const configValue = config[section.stateKey];
+                    const isSelected = Array.isArray(configValue) 
+                       ? configValue.includes(option.id)
+                       : configValue === option.id;
+
+                    return (
+                      <button
+                        key={option.id}
+                        onClick={() => handleOptionSelect(section.stateKey, option.id, section.multiSelect)}
+                        className={`group flex items-start p-4 border rounded-lg text-left transition-all duration-200 w-full
+                          ${isSelected ? 'border-medium-carmine-600 bg-medium-carmine-50 ring-1 ring-medium-carmine-600' : 'border-neutral-200 hover:border-neutral-400'}
+                        `}
+                      >
+                        {/* Icon or Color Circle */}
+                        {option.icon ? (
+                          <img 
+                            src={option.icon} 
+                            alt={option.label}
+                            className="w-32 h-20 rounded-md object-contain border border-neutral-200 flex-shrink-0 mr-4 bg-white"
+                          />
+                        ) : option.colorCode ? (
+                           <div 
+                              className="w-8 h-8 rounded-full border border-neutral-200 shadow-sm flex-shrink-0 mr-4" 
+                              style={{ backgroundColor: option.colorCode }}
+                           />
+                        ) : null}
+
+                        <div className="flex-1 min-w-0">
+                          <div className="flex justify-between items-start">
+                            <div className="font-medium text-sm text-neutral-900 uppercase tracking-widest">{option.label}</div>
+                            {option.price !== undefined && (
+                              <div className="text-sm font-medium text-neutral-900 ml-2 whitespace-nowrap uppercase tracking-widest">
+                                {option.price === 0 ? 'Included' : `+$${option.price.toLocaleString()}`}
+                              </div>
+                            )}
+                          </div>
+                          
+                          {option.description && (
+                            <div className="text-xs text-neutral-500 mt-2 leading-relaxed">
+                              {option.description}
+                            </div>
+                          )}
+                        </div>
+                      </button>
+                    );
+                  })}
+                 </div>
+              </div>
+            ))
+          )}
         </div>
 
         {/* Footer / Summary */}
-        <div className="p-6 border-t border-neutral-100 bg-neutral-50">
-          <div className="flex justify-between items-end mb-4">
+        <div className="p-8 border-t border-neutral-100 bg-neutral-50 flex-none">
+          <div className="flex justify-between items-end mb-6">
             <div>
-              <p className="text-xs text-neutral-500 uppercase tracking-wider">Estimated Price</p>
-              <div className="text-3xl font-light text-neutral-900">${calculateTotal().toLocaleString()}</div>
+              <p className="text-xs text-neutral-500 uppercase tracking-widest font-medium mb-1">Estimated Price</p>
+              <div className="text-3xl font-light text-neutral-900 tracking-tight">${calculateTotal().toLocaleString()}</div>
             </div>
           </div>
           
@@ -258,15 +370,15 @@ const Configurator: React.FC<ConfiguratorProps> = ({ config, setConfig, activeTa
             
             <button 
               onClick={handleNextStep}
-              className="flex-1 py-4 bg-medium-carmine-600 text-white text-sm font-medium uppercase tracking-widest hover:bg-medium-carmine-700 transition-colors"
+              className="flex-1 py-4 bg-medium-carmine-600 text-white text-sm font-medium uppercase tracking-widest hover:bg-medium-carmine-700 transition-colors shadow-lg shadow-medium-carmine-200"
             >
-              {isLastStep ? 'Get In Touch' : 'Next Step'}
+              {isLastStep ? 'Request Quote' : 'Next Step'}
             </button>
           </div>
         </div>
       </div>
 
-      {/* Modals - Placed outside main div to ensure fixed positioning works as expected */}
+      {/* Modals */}
       {(isFormOpen || isSuccessOpen) && (
         <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm">
           {isFormOpen && (
@@ -278,7 +390,7 @@ const Configurator: React.FC<ConfiguratorProps> = ({ config, setConfig, activeTa
                 <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M6 18L18 6M6 6l12 12" /></svg>
               </button>
               
-              <h2 className="text-2xl font-light mb-2">Request Quote</h2>
+              <h2 className="text-xl font-medium uppercase tracking-widest mb-2 text-neutral-900">Request Quote</h2>
               <p className="text-sm text-neutral-500 mb-6">Send your configuration to a dealer near you.</p>
               
               <form onSubmit={handleContactSubmit}>
@@ -309,7 +421,7 @@ const Configurator: React.FC<ConfiguratorProps> = ({ config, setConfig, activeTa
               <div className="w-16 h-16 bg-green-50 text-green-600 rounded-full flex items-center justify-center mx-auto mb-4">
                 <svg className="w-8 h-8" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M5 13l4 4L19 7" /></svg>
               </div>
-              <h2 className="text-xl font-medium mb-2">Request Received</h2>
+              <h2 className="text-xl font-medium uppercase tracking-widest mb-2 text-neutral-900">Request Received</h2>
               <p className="text-sm text-neutral-500 mb-6 leading-relaxed">A dealership representative will contact you within 24 hours to finalize your build.</p>
               <button 
                 onClick={() => setIsSuccessOpen(false)}

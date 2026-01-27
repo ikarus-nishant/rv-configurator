@@ -131,19 +131,7 @@ const Scene: React.FC<SceneProps> = ({ config, activeTab }) => {
     <div className="w-full h-full bg-[#f0f0f0] relative">
        <Loader />
        
-       {/* Logo Overlay */}
-       <a 
-         href="https://www.ikarusdelta.com/" 
-         target="_blank" 
-         rel="noopener noreferrer"
-         className="absolute top-6 left-6 z-10 block cursor-pointer"
-       >
-         <img 
-          src="https://cdn.prod.website-files.com/65792fa13a1bbf4d8e520e33/65ddb66c43de033385b8502b_Delta-new-logo%20(1).avif" 
-          alt="Delta Logo" 
-          className="w-24 md:w-32 lg:w-40 object-contain"
-        />
-       </a>
+       {/* Removed floating Logo overlay as it's now in the header */}
 
        {/* Interior Navigation Buttons Overlay - Visible whenever in Interior Tab */}
       {activeTab === ConfigCategory.INTERIOR && (

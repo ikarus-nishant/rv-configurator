@@ -21,13 +21,16 @@ const ExteriorModel: React.FC<{ config: ProductConfig }> = ({ config }) => {
   const { scene } = useGLTF(EXTERIOR_URL);
 
   useEffect(() => {
-    const materialCategory = CONFIG_DATA.find(c => c.id === ConfigCategory.MATERIAL);
-    const selectedOption = materialCategory?.options.find(o => o.id === config.material);
+    // Traverse new structure to find material option
+    const materialSection = CONFIG_DATA.find(c => c.id === ConfigCategory.EXTERIOR)
+      ?.sections.find(s => s.stateKey === 'material');
+    const selectedOption = materialSection?.options.find(o => o.id === config.material);
     const targetColor = selectedOption?.colorCode || '#E0E0E0';
 
-    const exteriorIds = CONFIG_DATA
-      .find(c => c.id === ConfigCategory.EXTERIOR)
-      ?.options.map(o => o.id) || [];
+    // Traverse new structure to find exterior addon options
+    const exteriorSection = CONFIG_DATA.find(c => c.id === ConfigCategory.EXTERIOR)
+      ?.sections.find(s => s.stateKey === 'exterior');
+    const exteriorIds = exteriorSection?.options.map(o => o.id) || [];
 
     scene.traverse((child) => {
       if (child instanceof THREE.Mesh) {

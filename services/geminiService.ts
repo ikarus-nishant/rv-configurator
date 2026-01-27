@@ -7,7 +7,8 @@ export const getConfigurationAdvice = async (config: ProductConfig): Promise<str
   const prompt = `
     You are an expert RV and travel trailer consultant. 
     The user has configured a luxury travel trailer with the following specs:
-    - Model/Length: ${config.size}
+    - Model Size: ${config.size} feet
+    - Floorplan Code: ${config.floorplan}
     - Exterior Packages: ${config.exterior.length > 0 ? config.exterior.join(', ') : 'Standard'}
     - Interior Decor: ${config.interior.length > 0 ? config.interior.join(', ') : 'Standard'}
     - Shell Finish: ${config.material}
