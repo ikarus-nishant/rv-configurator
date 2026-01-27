@@ -1,4 +1,3 @@
-
 import React, { Suspense, useState, useMemo, useEffect } from 'react';
 import { Canvas } from '@react-three/fiber';
 import { OrbitControls, Environment, ContactShadows, useProgress, GizmoHelper, GizmoViewport } from '@react-three/drei';
@@ -57,6 +56,9 @@ const SceneContent: React.FC<SceneContentProps> = ({ config, activeTab, resetTri
   const controlsTarget = useMemo(() => [0, 1, 0], []);
   
   const isFloorplan = activeTab === ConfigCategory.FLOORPLAN;
+  const isInterior = activeTab === ConfigCategory.INTERIOR;
+
+  const Controls = OrbitControls as any;
 
   return (
     <>
@@ -90,11 +92,10 @@ const SceneContent: React.FC<SceneContentProps> = ({ config, activeTab, resetTri
       {/* Disable Orbit Controls when in AR to allow user to walk around */}
       {!isPresenting && (
         <>
-            {/* @ts-ignore */}
-            <OrbitControls 
+            <Controls 
                 makeDefault 
                 minPolarAngle={0} 
-                maxPolarAngle={isFloorplan ? 0 : Math.PI / 2} 
+                maxPolarAngle={isFloorplan ? 0 : (isInterior ? Math.PI : Math.PI / 2)} 
                 enableZoom={true} 
                 enablePan={true}
                 enableRotate={!isFloorplan} // Disable rotation for strict floorplan view
@@ -132,36 +133,12 @@ const Scene: React.FC<SceneProps> = ({ config, activeTab }) => {
   const qrUrl = encodeURIComponent(`${window.location.origin}${window.location.pathname}?ar=true&material=${config.material}`);
   const qrImageSrc = `https://api.qrserver.com/v1/create-qr-code/?size=250x250&data=${qrUrl}&color=3f1310`;
 
-  const waypoints = ['Waypoint1', 'Waypoint2', 'Waypoint3'];
-
   return (
     <div className="w-full h-full bg-[#f0f0f0] relative">
        <Loader />
        
        {/* Removed floating Logo overlay as it's now in the header */}
-
-       {/* Interior Navigation Buttons Overlay - Visible whenever in Interior Tab */}
-      {activeTab === ConfigCategory.INTERIOR && (
-        <div className="absolute left-6 top-1/2 -translate-y-1/2 flex flex-col gap-4 z-20 pointer-events-auto">
-          {waypoints.map((wp, index) => {
-            const isActive = activeWaypoint === wp;
-            return (
-              <button
-                key={wp}
-                onClick={() => setActiveWaypoint(wp)}
-                className={`w-12 h-12 md:w-16 md:h-16 border-2 flex items-center justify-center transition-all duration-300 shadow-md backdrop-blur-sm
-                  ${isActive 
-                    ? 'border-medium-carmine-600 bg-white text-medium-carmine-700' 
-                    : 'border-white/60 bg-white/20 hover:bg-white/40 text-neutral-600 hover:border-white'
-                  }`}
-                aria-label={`Go to view ${index + 1}`}
-              >
-                 <span className="font-medium text-lg">{index + 1}</span>
-              </button>
-            );
-          })}
-        </div>
-      )}
+       {/* Removed Interior Navigation Buttons Overlay */}
 
       {/* Action Buttons Overlay - Styled to match Configurator */}
       <div className="absolute bottom-8 left-1/2 -translate-x-1/2 z-20 flex items-center gap-4 w-full justify-center pointer-events-none">

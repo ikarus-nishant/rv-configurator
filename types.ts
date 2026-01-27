@@ -1,3 +1,4 @@
+import React from 'react';
 
 export enum ConfigCategory {
   SIZE = 'Size',
@@ -41,23 +42,33 @@ export interface CategoryData {
 declare global {
   namespace JSX {
     interface IntrinsicElements {
-      // Three.js elements (using any to bypass complex type matching)
+      // Three.js elements
       group: any;
       primitive: any;
       ambientLight: any;
       spotLight: any;
+      mesh: any;
+      sphereGeometry: any;
+      meshBasicMaterial: any;
       
       // Custom Web Components
-      'model-viewer': React.DetailedHTMLProps<React.HTMLAttributes<HTMLElement>, HTMLElement> & {
-        src?: string;
-        ar?: boolean;
-        'ar-modes'?: string;
-        'camera-controls'?: boolean;
-        'tone-mapping'?: string;
-        'shadow-intensity'?: string;
-        slot?: string;
-        [key: string]: any;
-      };
+      'model-viewer': any;
+    }
+  }
+}
+
+// Additional augmentation for React.JSX namespace which is required by some TypeScript configurations
+declare module 'react' {
+  namespace JSX {
+    interface IntrinsicElements {
+      group: any;
+      primitive: any;
+      ambientLight: any;
+      spotLight: any;
+      mesh: any;
+      sphereGeometry: any;
+      meshBasicMaterial: any;
+      'model-viewer': any;
     }
   }
 }

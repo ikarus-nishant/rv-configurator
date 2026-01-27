@@ -1,8 +1,7 @@
-
-import React, { useEffect, useRef, useState, Suspense } from 'react';
+import React, { useEffect, useRef, useState, Suspense, useMemo } from 'react';
 import { useGLTF, Html, OrthographicCamera } from '@react-three/drei';
 import { useThree, useFrame } from '@react-three/fiber';
-import { Mesh, Vector3, Object3D, PerspectiveCamera, Quaternion } from 'three';
+import { Mesh, Vector3, Object3D, PerspectiveCamera, Quaternion, Group } from 'three';
 import { OrbitControls as OrbitControlsImpl } from 'three-stdlib';
 import { ProductConfig, ConfigCategory } from '../types';
 import { CONFIG_DATA } from '../constants';
@@ -73,6 +72,60 @@ const FloorplanModel: React.FC = () => {
   return <primitive object={scene} />;
 };
 
+interface HotspotProps {
+  position: Vector3;
+  isActive: boolean;
+  onClick: () => void;
+}
+
+const Hotspot: React.FC<HotspotProps> = ({ position, isActive, onClick }) => {
+  const [hovered, setHovered] = useState(false);
+  
+  const handlePointerOver = (e: any) => {
+    e.stopPropagation();
+    setHovered(true);
+    document.body.style.cursor = 'pointer';
+  };
+
+  const handlePointerOut = (e: any) => {
+    setHovered(false);
+    document.body.style.cursor = 'auto';
+  };
+
+  return (
+    <group 
+      position={position} 
+      onClick={(e) => { e.stopPropagation(); onClick(); }} 
+      onPointerOver={handlePointerOver} 
+      onPointerOut={handlePointerOut}
+      renderOrder={100}
+    >
+      {/* Visual Indicator */}
+      <mesh>
+        <sphereGeometry args={[0.04, 32, 32]} />
+        <meshBasicMaterial 
+            color={isActive || hovered ? "#ba3b32" : "#ffffff"} 
+            toneMapped={false} 
+            depthTest={false} 
+            transparent
+        />
+      </mesh>
+      
+      {/* Glow / Interaction Area */}
+      <mesh>
+        <sphereGeometry args={[0.08, 32, 32]} />
+        <meshBasicMaterial 
+            color={isActive || hovered ? "#ba3b32" : "#ffffff"} 
+            transparent 
+            opacity={0.3} 
+            toneMapped={false} 
+            depthTest={false}
+        />
+      </mesh>
+    </group>
+  );
+};
+
 interface InteriorModelProps {
   activeWaypoint: string;
   onTargetFound: (target: Object3D) => void;
@@ -81,6 +134,34 @@ interface InteriorModelProps {
 
 const InteriorModel: React.FC<InteriorModelProps> = ({ activeWaypoint, onTargetFound, onUserClick }) => {
   const { scene } = useGLTF(INTERIOR_URL);
+  const [waypoints, setWaypoints] = useState<{name: string, position: Vector3}[]>([]);
+
+  // Pre-process scene: hide planes and find waypoints
+  useEffect(() => {
+    const foundWaypoints: {name: string, position: Vector3}[] = [];
+    
+    // Ensure world matrices are up to date for position extraction
+    scene.updateMatrixWorld(true);
+
+    scene.traverse((child) => {
+      // Hide navigation planes
+      if (child.name.includes('Plane')) {
+        child.visible = false;
+      }
+      
+      // Collect waypoints
+      // Assuming waypoints are named "Waypoint1", "Waypoint2", etc.
+      if (child.name.includes('Waypoint')) {
+        const pos = new Vector3();
+        child.getWorldPosition(pos);
+        foundWaypoints.push({ name: child.name, position: pos });
+      }
+    });
+
+    // Sort waypoints by name to ensure consistent order if needed, or leave as is
+    foundWaypoints.sort((a, b) => a.name.localeCompare(b.name));
+    setWaypoints(foundWaypoints);
+  }, [scene]);
 
   // Sync 3D camera target when activeWaypoint prop changes or model loads
   useEffect(() => {
@@ -90,37 +171,18 @@ const InteriorModel: React.FC<InteriorModelProps> = ({ activeWaypoint, onTargetF
     }
   }, [scene, activeWaypoint, onTargetFound]);
 
-  const handleClick = (e: any) => {
-    e.stopPropagation();
-    const name = e.object.name;
-    let targetName = '';
-
-    if (name.includes('Plane1')) targetName = 'Waypoint1';
-    else if (name.includes('Plane2')) targetName = 'Waypoint2';
-    else if (name.includes('Plane3')) targetName = 'Waypoint3';
-
-    if (targetName) {
-      onUserClick(targetName);
-    }
-  };
-
-  const handlePointerOver = (e: any) => {
-    if (e.object.name.includes('Plane')) {
-      document.body.style.cursor = 'pointer';
-    }
-  };
-
-  const handlePointerOut = () => {
-    document.body.style.cursor = 'auto';
-  };
-
   return (
-    <primitive 
-      object={scene} 
-      onClick={handleClick} 
-      onPointerOver={handlePointerOver} 
-      onPointerOut={handlePointerOut} 
-    />
+    <group>
+      <primitive object={scene} />
+      {waypoints.map((wp) => (
+        <Hotspot 
+          key={wp.name}
+          position={wp.position}
+          isActive={activeWaypoint === wp.name}
+          onClick={() => onUserClick(wp.name)}
+        />
+      ))}
+    </group>
   );
 };
 
