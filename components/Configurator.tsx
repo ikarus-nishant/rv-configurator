@@ -323,7 +323,7 @@ const Configurator: React.FC<ConfiguratorProps> = ({ config, setConfig, activeTa
         <div className="border-t border-neutral-100 bg-white flex-none">
           
           {/* Mobile Footer: Arrow Navigation with Center Price */}
-          <div className="lg:hidden p-4 flex items-center justify-between gap-4">
+          <div className="lg:hidden p-4 pb-8 flex items-center justify-between gap-4">
             <button 
               onClick={handlePreviousStep}
               disabled={currentStepIndex === 0}

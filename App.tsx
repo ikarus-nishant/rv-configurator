@@ -34,7 +34,7 @@ function App() {
   };
 
   return (
-    <div className="flex flex-col h-screen w-screen overflow-hidden bg-neutral-100 font-sans">
+    <div className="flex flex-col h-[100dvh] w-screen overflow-hidden bg-neutral-100 font-sans">
       {/* Global Navigation Bar - Responsive Height */}
       <header className="flex-none h-16 lg:h-20 bg-[#111111] text-white flex items-center justify-center px-4 lg:px-8 z-30 shadow-md border-b border-white/5 relative">
          
