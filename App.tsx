@@ -19,7 +19,7 @@ function App() {
   }, []);
 
   if (isARMode) {
-    return <ARView />;
+    return <ARView config={config} onExit={() => setIsARMode(false)} />;
   }
 
   const currentStepIndex = CONFIG_DATA.findIndex(c => c.id === activeTab);
@@ -41,9 +41,9 @@ function App() {
          {/* Logo - Positioned Absolute Left */}
          <div className="absolute left-4 lg:left-8 flex items-center gap-3 top-1/2 -translate-y-1/2">
              <img 
-              src="https://cdn.prod.website-files.com/65792fa13a1bbf4d8e520e33/65ddb66c43de033385b8502b_Delta-new-logo%20(1).avif" 
-              alt="Delta Logo" 
-              className="h-6 lg:h-8 w-auto brightness-0 invert object-contain opacity-90 hover:opacity-100 transition-opacity"
+              src="https://www.dropbox.com/scl/fi/fsxbk5lsvs01mey2xu0np/Logo.webp?rlkey=dwhud57pj0waxfrmt4da7mj62&dl=1" 
+              alt="Ikarus Delta Logo" 
+              className="h-6 lg:h-14 w-auto brightness-0 invert object-contain opacity-90 hover:opacity-100 transition-opacity"
             />
          </div>
 
@@ -96,7 +96,11 @@ function App() {
       <div className="flex-1 flex flex-col lg:flex-row relative overflow-hidden w-full">
         {/* 3D Canvas Area - Adaptive Size */}
         <div className="relative w-full lg:flex-1 h-[45%] lg:h-full order-1 lg:order-1 min-w-0 bg-[#f0f0f0]">
-          <Scene config={config} activeTab={activeTab} />
+          <Scene 
+            config={config} 
+            activeTab={activeTab} 
+            onEnterAR={() => setIsARMode(true)} 
+          />
         </div>
 
         {/* Configuration Menu - Laptop/Desktop Side Panel */}

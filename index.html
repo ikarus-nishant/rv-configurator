@@ -35,6 +35,33 @@
         margin: 0;
         padding: 0;
         overflow: hidden; /* Prevent scrolling on the main body */
+        
+        /* Prevent text/element selection globally */
+        -webkit-user-select: none;
+        -moz-user-select: none;
+        -ms-user-select: none;
+        user-select: none;
+        
+        /* Disable long-press context menus on mobile */
+        -webkit-touch-callout: none;
+        
+        /* Smooth interactions */
+        -webkit-tap-highlight-color: transparent;
+      }
+
+      /* Allow selection only in input fields for the form */
+      input, textarea, [contenteditable="true"] {
+        -webkit-user-select: text;
+        -moz-user-select: text;
+        -ms-user-select: text;
+        user-select: text;
+        cursor: text;
+      }
+
+      /* Prevent dragging of images and links */
+      img, a {
+        -webkit-user-drag: none;
+        user-drag: none;
       }
 
       /* Custom Scrollbar Styling */

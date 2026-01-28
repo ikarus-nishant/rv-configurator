@@ -1,3 +1,4 @@
+
 import { ConfigCategory, CategoryData } from './types';
 
 export const CONFIG_DATA: CategoryData[] = [
@@ -42,17 +43,12 @@ export const CONFIG_DATA: CategoryData[] = [
         stateKey: 'floorplan',
         multiSelect: false,
         options: [
-          // Options for 23'
           { id: '23fb', label: 'Front Bed Queen', price: 0, description: 'Master suite in front, dining in rear.', availableForSize: ['23'] },
           { id: '23cb', label: 'Corner Bunk', price: 1500, description: 'Rear corner bed with overhead bunk.', availableForSize: ['23'] },
           { id: '23tb', label: 'Twin Bed', price: 500, description: 'Dual twin beds for flexible sleeping.', availableForSize: ['23'] },
-          
-          // Options for 25'
           { id: '25fb', label: 'Front Bed Queen', price: 0, description: 'Spacious front bedroom with panoramic view.', availableForSize: ['25'] },
           { id: '25rb', label: 'Rear Bed Queen', price: 0, description: 'Bedroom tucked in the back for privacy.', availableForSize: ['25'] },
           { id: '25fb_twin', label: 'Front Bed Twin', price: 500, description: 'Open center aisle with twin beds.', availableForSize: ['25'] },
-
-          // Options for 27'
           { id: '27fb', label: 'Front Bed Queen', price: 0, description: 'Maximum master suite luxury.', availableForSize: ['27'] },
           { id: '27rb', label: 'Rear Bed Queen', price: 0, description: 'Secluded rear bedroom retreat.', availableForSize: ['27'] },
           { id: '27office', label: 'Home Office', price: 2500, description: 'Dedicated desk workspace with sleeping options.', availableForSize: ['27'] },
@@ -136,6 +132,7 @@ export const CONFIG_DATA: CategoryData[] = [
     id: ConfigCategory.INTERIOR,
     sections: [
       {
+        title: 'Select Upholstery',
         stateKey: 'interior',
         multiSelect: false,
         options: [
@@ -143,12 +140,22 @@ export const CONFIG_DATA: CategoryData[] = [
           { id: 'urban', label: 'Urban Loft', price: 1500, description: 'High-gloss cabinetry, dark accents, modern tech.' },
           { id: 'lodge', label: 'Mountain Lodge', price: 2500, description: 'Warm walnut, leather seating, cozy textiles.' },
         ]
+      },
+      {
+        title: 'Select Cabinets',
+        stateKey: 'cabinets',
+        multiSelect: false,
+        options: [
+          { id: 'natural_oak', label: 'Natural Oak', price: 0, description: 'Light, organic wood finish.' },
+          { id: 'walnut', label: 'Deep Walnut', price: 800, description: 'Rich, dark wood grain.' },
+          { id: 'modern_gray', label: 'Modern Gray', price: 500, description: 'Sleek, painted minimalist finish.' },
+        ]
       }
     ]
   },
   {
     id: ConfigCategory.SUMMARY,
-    sections: [] // Empty sections, rendered manually in Summary view
+    sections: []
   }
 ];
 
@@ -157,5 +164,6 @@ export const INITIAL_CONFIG: any = {
   floorplan: '27fb',
   exterior: [],
   interior: ['coastal'],
+  cabinets: 'natural_oak',
   material: 'aluminum',
 };

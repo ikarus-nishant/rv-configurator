@@ -39,9 +39,10 @@ const Loader = () => {
 interface SceneProps {
   config: ProductConfig;
   activeTab: ConfigCategory;
+  onEnterAR?: () => void;
 }
 
-interface SceneContentProps extends SceneProps {
+interface SceneContentProps extends Omit<SceneProps, 'onEnterAR'> {
   resetTrigger: number;
   activeWaypoint: string;
   onWaypointChange: (wp: string) => void;
@@ -104,7 +105,7 @@ const SceneContent: React.FC<SceneContentProps> = ({ config, activeTab, resetTri
   );
 };
 
-const Scene: React.FC<SceneProps> = ({ config, activeTab }) => {
+const Scene: React.FC<SceneProps> = ({ config, activeTab, onEnterAR }) => {
   const [resetTrigger, setResetTrigger] = useState(0);
   const [showQR, setShowQR] = useState(false);
   const [activeWaypoint, setActiveWaypoint] = useState('Waypoint1');
@@ -114,6 +115,19 @@ const Scene: React.FC<SceneProps> = ({ config, activeTab }) => {
       setActiveWaypoint('Waypoint1');
     }
   }, [activeTab]);
+
+  const handleARClick = () => {
+    // Detect mobile/tablet devices
+    const isMobileOrTablet = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
+    
+    if (isMobileOrTablet && onEnterAR) {
+      // Directly transition to AR mode on mobile/tablet
+      onEnterAR();
+    } else {
+      // Show QR code for desktop
+      setShowQR(true);
+    }
+  };
 
   const qrUrl = encodeURIComponent(`${window.location.origin}${window.location.pathname}?ar=true&material=${config.material}`);
   const qrImageSrc = `https://api.qrserver.com/v1/create-qr-code/?size=250x250&data=${qrUrl}&color=3f1310`;
@@ -128,7 +142,6 @@ const Scene: React.FC<SceneProps> = ({ config, activeTab }) => {
           className="pointer-events-auto w-10 h-10 lg:w-auto lg:h-auto lg:py-3.5 lg:px-8 flex items-center justify-center bg-white/90 backdrop-blur-md border border-neutral-200 text-neutral-900 rounded-full lg:rounded-none text-[10px] lg:text-xs font-bold uppercase tracking-widest hover:border-neutral-900 transition-all shadow-xl lg:min-w-[160px] active:scale-95"
           title="Reset View"
         >
-          {/* Mobile Icon */}
           <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="w-5 h-5 lg:hidden">
             <path strokeLinecap="round" strokeLinejoin="round" d="M16.023 9.348h4.992v-.001M2.985 19.644v-4.992m0 0h4.992m-4.993 0l3.181 3.183a8.25 8.25 0 0013.803-3.7M4.031 9.865a8.25 8.25 0 0113.803-3.7l3.181 3.182m0-4.991v4.99" />
           </svg>
@@ -136,15 +149,14 @@ const Scene: React.FC<SceneProps> = ({ config, activeTab }) => {
         </button>
 
         <button 
-          onClick={() => setShowQR(true)}
+          onClick={handleARClick}
           className="pointer-events-auto w-10 h-10 lg:w-auto lg:h-auto lg:py-3.5 lg:px-8 flex items-center justify-center bg-medium-carmine-600 text-white rounded-full lg:rounded-none text-[10px] lg:text-xs font-bold uppercase tracking-widest hover:bg-medium-carmine-700 transition-all shadow-xl lg:min-w-[160px] border border-transparent active:scale-95"
           title="View in AR"
         >
-          {/* Mobile Icon */}
           <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="w-5 h-5 lg:hidden">
             <path strokeLinecap="round" strokeLinejoin="round" d="M21 7.5l-9-5.25L3 7.5m18 0l-9 5.25m9-5.25v9l-9 5.25M3 7.5l9 5.25M3 7.5v9l9 5.25m0-9v9" />
           </svg>
-           <span className="hidden lg:inline">View in Space</span>
+           <span className="hidden lg:inline">View in AR</span>
         </button>
       </div>
 

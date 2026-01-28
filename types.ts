@@ -1,3 +1,4 @@
+
 import React from 'react';
 
 export enum ConfigCategory {
@@ -13,6 +14,7 @@ export interface ProductConfig {
   floorplan: string;
   exterior: string[];
   interior: string[];
+  cabinets: string;
   material: 'aluminum' | 'matte_black' | 'satin_white' | 'forest_green';
 }
 
@@ -38,29 +40,12 @@ export interface CategoryData {
   sections: ConfigSection[];
 }
 
-// Augment JSX namespace to include R3F elements and custom elements
+/**
+ * Augment the global JSX namespace to include custom elements.
+ */
 declare global {
   namespace JSX {
     interface IntrinsicElements {
-      // Three.js elements
-      group: any;
-      primitive: any;
-      ambientLight: any;
-      spotLight: any;
-      mesh: any;
-      sphereGeometry: any;
-      meshBasicMaterial: any;
-      
-      // Custom Web Components
-      'model-viewer': any;
-    }
-  }
-}
-
-// Additional augmentation for React.JSX namespace which is required by some TypeScript configurations
-declare module 'react' {
-  namespace JSX {
-    interface IntrinsicElements {
       group: any;
       primitive: any;
       ambientLight: any;
@@ -69,6 +54,7 @@ declare module 'react' {
       sphereGeometry: any;
       meshBasicMaterial: any;
       'model-viewer': any;
+      [elemName: string]: any;
     }
   }
 }

@@ -1,16 +1,19 @@
-
 import React, { useEffect, useRef } from 'react';
 import { CONFIG_DATA } from '../constants';
-import { ConfigCategory } from '../types';
+import { ConfigCategory, ProductConfig } from '../types';
 
-const ARView: React.FC = () => {
+interface ARViewProps {
+  config?: ProductConfig;
+  onExit?: () => void;
+}
+
+const ARView: React.FC<ARViewProps> = ({ config, onExit }) => {
   const modelViewerRef = useRef<any>(null);
 
   useEffect(() => {
-    // Parse configuration from URL parameters
     const params = new URLSearchParams(window.location.search);
-    const materialId = params.get('material');
-    // const exteriorIds = params.get('exterior')?.split(',') || []; // Visibility logic is complex in model-viewer without variants, focusing on material.
+    // Use prop config if available, fallback to URL params
+    const materialId = config?.material || params.get('material');
 
     const handleLoad = () => {
       const modelViewer = modelViewerRef.current;
@@ -57,13 +60,21 @@ const ARView: React.FC = () => {
         mv.removeEventListener('load', handleLoad);
       }
     };
-  }, []);
+  }, [config]);
+
+  const handleClose = (e: React.MouseEvent) => {
+    if (onExit) {
+      e.preventDefault();
+      onExit();
+    }
+  };
 
   return (
     <div className="w-full h-screen bg-white relative flex flex-col items-center justify-center">
       {/* Back Button */}
       <a 
         href={window.location.pathname} 
+        onClick={handleClose}
         className="absolute top-4 left-4 z-20 bg-white/80 backdrop-blur-md p-2 rounded-full shadow-lg border border-neutral-200 text-neutral-800"
       >
         <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="w-6 h-6">
