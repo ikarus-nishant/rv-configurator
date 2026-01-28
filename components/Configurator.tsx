@@ -1,6 +1,7 @@
 import React, { useState, useRef } from 'react';
 import { CONFIG_DATA } from '../constants';
 import { ProductConfig, ConfigCategory } from '../types';
+import { triggerHaptic } from '../utils/haptics';
 
 interface ConfiguratorProps {
   config: ProductConfig;
@@ -9,18 +10,16 @@ interface ConfiguratorProps {
   setActiveTab: React.Dispatch<React.SetStateAction<ConfigCategory>>;
 }
 
-// A neutral placeholder icon for options without specific imagery
 const PLACEHOLDER_ICON = "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='100' height='100' viewBox='0 0 100 100'%3E%3Crect width='100' height='100' fill='%23f5f5f5'/%3E%3Cpath d='M30 50 L70 50 M50 30 L50 70' stroke='%23dcdcdc' stroke-width='2'/%3E%3Ctext x='50%25' y='55%25' dominant-baseline='middle' text-anchor='middle' font-family='sans-serif' font-size='8' font-weight='bold' fill='%23bbbbbb' text-transform='uppercase' letter-spacing='1'%3EIKARUS%3C/text%3E%3C/svg%3E";
 
 const Configurator: React.FC<ConfiguratorProps> = ({ config, setConfig, activeTab, setActiveTab }) => {
   const scrollContainerRef = useRef<HTMLDivElement>(null);
 
-  // Modal State
   const [isFormOpen, setIsFormOpen] = useState(false);
   const [isSuccessOpen, setIsSuccessOpen] = useState(false);
 
-  // Scroll handler for tabs
   const scrollTabs = (direction: 'left' | 'right') => {
+    triggerHaptic(5);
     if (scrollContainerRef.current) {
       const scrollAmount = 150;
       const newScrollLeft = direction === 'left' 
@@ -34,32 +33,25 @@ const Configurator: React.FC<ConfiguratorProps> = ({ config, setConfig, activeTa
     }
   };
 
-  // Total Price Calculation
   const calculateTotal = () => {
     let total = 0;
-    
     CONFIG_DATA.forEach(category => {
       category.sections.forEach(section => {
         section.options.forEach(option => {
           const configValue = config[section.stateKey];
-          
           if (Array.isArray(configValue)) {
-            if (configValue.includes(option.id) && option.price) {
-              total += option.price;
-            }
+            if (configValue.includes(option.id) && option.price) total += option.price;
           } else {
-            if (configValue === option.id && option.price) {
-              total += option.price;
-            }
+            if (configValue === option.id && option.price) total += option.price;
           }
         });
       });
     });
-
     return total;
   };
 
   const handleOptionSelect = (stateKey: keyof ProductConfig, optionId: string, multiSelect: boolean) => {
+    triggerHaptic(10);
     setConfig(prev => {
       const newConfig = { ...prev };
       const currentValue = prev[stateKey];
@@ -69,10 +61,7 @@ const Configurator: React.FC<ConfiguratorProps> = ({ config, setConfig, activeTa
         const floorplanCategory = CONFIG_DATA.find(c => c.id === ConfigCategory.FLOORPLAN);
         const floorplanSection = floorplanCategory?.sections.find(s => s.stateKey === 'floorplan');
         const defaultFloorplan = floorplanSection?.options.find(o => o.availableForSize?.includes(optionId))?.id;
-        
-        if (defaultFloorplan) {
-          newConfig.floorplan = defaultFloorplan;
-        }
+        if (defaultFloorplan) newConfig.floorplan = defaultFloorplan;
         return newConfig;
       }
 
@@ -93,45 +82,35 @@ const Configurator: React.FC<ConfiguratorProps> = ({ config, setConfig, activeTa
   };
 
   const activeCategoryData = CONFIG_DATA.find(c => c.id === activeTab);
-  
   const currentStepIndex = CONFIG_DATA.findIndex(c => c.id === activeTab);
   const isLastStep = currentStepIndex === CONFIG_DATA.length - 1;
 
-  const scrollToTab = (index: number) => {
-    if (scrollContainerRef.current) {
-        const width = scrollContainerRef.current.scrollWidth;
-        const itemWidth = width / CONFIG_DATA.length;
-        scrollContainerRef.current.scrollTo({
-            left: index * itemWidth,
-            behavior: 'smooth'
-        });
-    }
+  const handleTabClick = (id: ConfigCategory) => {
+    triggerHaptic(8);
+    setActiveTab(id);
   };
 
   const handleNextStep = () => {
+    triggerHaptic(12);
     if (isLastStep) {
       setIsFormOpen(true);
     } else {
       const nextCategory = CONFIG_DATA[currentStepIndex + 1];
-      if (nextCategory) {
-        setActiveTab(nextCategory.id);
-        scrollToTab(currentStepIndex + 1);
-      }
+      if (nextCategory) setActiveTab(nextCategory.id);
     }
   };
 
   const handlePreviousStep = () => {
+    triggerHaptic(8);
     if (currentStepIndex > 0) {
       const prevCategory = CONFIG_DATA[currentStepIndex - 1];
-      if (prevCategory) {
-        setActiveTab(prevCategory.id);
-        scrollToTab(currentStepIndex - 1);
-      }
+      if (prevCategory) setActiveTab(prevCategory.id);
     }
   };
 
   const handleContactSubmit = (e: React.FormEvent) => {
     e.preventDefault();
+    triggerHaptic(20);
     setIsFormOpen(false);
     setIsSuccessOpen(true);
   };
@@ -139,7 +118,6 @@ const Configurator: React.FC<ConfiguratorProps> = ({ config, setConfig, activeTa
   const getSelectedOptionDetails = (stateKey: keyof ProductConfig) => {
     const value = config[stateKey];
     let foundOptions: { label: string, price: number }[] = [];
-
     CONFIG_DATA.forEach(cat => {
       cat.sections.forEach(sec => {
         if (sec.stateKey === stateKey) {
@@ -169,7 +147,7 @@ const Configurator: React.FC<ConfiguratorProps> = ({ config, setConfig, activeTa
             {CONFIG_DATA.map((cat) => (
               <button
                 key={cat.id}
-                onClick={() => setActiveTab(cat.id)}
+                onClick={() => handleTabClick(cat.id)}
                 className={`px-4 py-3 text-[10px] font-bold uppercase tracking-widest transition-colors duration-200 relative shrink-0 ${activeTab === cat.id ? 'text-medium-carmine-700' : 'text-neutral-400'}`}
               >
                 {cat.id}
@@ -239,7 +217,7 @@ const Configurator: React.FC<ConfiguratorProps> = ({ config, setConfig, activeTa
                           {option.description && <div className="text-[10px] lg:text-xs text-neutral-500 mt-2 leading-relaxed line-clamp-2 pr-12">{option.description}</div>}
                         </div>
                         {option.price !== undefined && (
-                            <div className="absolute bottom-2 right-2 lg:bottom-3 lg:right-3 bg-white/95 backdrop-blur-sm px-2 py-0.5 rounded border border-neutral-100 shadow-sm z-10">
+                            <div className="absolute bottom-2 right-2 lg:bottom-3 lg:right-3 z-10">
                                 <span className="text-[9px] lg:text-[10px] font-bold text-neutral-900 uppercase tracking-tight">
                                     {option.price === 0 ? 'INCL.' : `+$${option.price.toLocaleString()}`}
                                 </span>
@@ -291,7 +269,7 @@ const Configurator: React.FC<ConfiguratorProps> = ({ config, setConfig, activeTa
         <div className="fixed inset-0 z-[100] flex items-center justify-center p-4 bg-black/70 backdrop-blur-md">
           {isFormOpen && (
             <div className="bg-white w-full max-w-md p-6 lg:p-10 rounded-2xl shadow-2xl relative animate-[fadeIn_0.3s_ease-out]">
-              <button onClick={() => setIsFormOpen(false)} className="absolute top-6 right-6 text-neutral-400"><svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" /></svg></button>
+              <button onClick={() => { triggerHaptic(); setIsFormOpen(false); }} className="absolute top-6 right-6 text-neutral-400"><svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" /></svg></button>
               <h2 className="text-lg lg:text-xl font-bold uppercase tracking-widest mb-2 text-neutral-900">Reserve Your Build</h2>
               <p className="text-[10px] lg:text-xs text-neutral-500 mb-8 uppercase tracking-widest font-medium">Connect with an authorized specialist</p>
               <form onSubmit={handleContactSubmit} className="space-y-4">
@@ -306,7 +284,7 @@ const Configurator: React.FC<ConfiguratorProps> = ({ config, setConfig, activeTa
               <div className="w-16 h-16 bg-green-50 text-green-600 rounded-full flex items-center justify-center mx-auto mb-6"><svg className="w-8 h-8" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" /></svg></div>
               <h2 className="text-lg lg:text-xl font-bold uppercase tracking-widest mb-4 text-neutral-900">Inquiry Sent</h2>
               <p className="text-[10px] lg:text-xs text-neutral-500 mb-8 leading-relaxed uppercase tracking-widest font-medium">Your configuration is secured. A concierge will contact you shortly.</p>
-              <button onClick={() => setIsSuccessOpen(false)} className="w-full py-4 border border-neutral-200 text-neutral-900 text-xs font-bold uppercase tracking-widest hover:bg-neutral-50">Return to Configurator</button>
+              <button onClick={() => { triggerHaptic(); setIsSuccessOpen(false); }} className="w-full py-4 border border-neutral-200 text-neutral-900 text-xs font-bold uppercase tracking-widest hover:bg-neutral-50">Return to Configurator</button>
             </div>
           )}
         </div>

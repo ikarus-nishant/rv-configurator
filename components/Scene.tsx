@@ -4,17 +4,19 @@ import { OrbitControls, Environment, ContactShadows, useProgress } from '@react-
 import { XR, createXRStore, useXR } from '@react-three/xr';
 import ProductModel from './ProductModel';
 import { ProductConfig, ConfigCategory } from '../types';
+import { triggerHaptic } from '../utils/haptics';
 
 // Initialize XR Store
 const store = createXRStore();
 
 // Custom Loader Component
-const Loader = () => {
+const Loader = ({ forcedActive = false }: { forcedActive?: boolean }) => {
   const { active, progress } = useProgress();
+  const isActuallyActive = forcedActive || active;
   
   return (
     <div 
-      className={`absolute inset-0 z-50 flex flex-col items-center justify-center bg-[#f0f0f0] transition-opacity duration-1000 ${active ? 'opacity-100' : 'opacity-0 pointer-events-none'}`}
+      className={`absolute inset-0 z-50 flex flex-col items-center justify-center bg-[#f0f0f0] transition-opacity duration-500 ${isActuallyActive ? 'opacity-100' : 'opacity-0 pointer-events-none'}`}
     >
       <div className="flex flex-col items-center px-6 text-center">
          <div className="text-xl lg:text-3xl font-light mb-8 tracking-tight text-neutral-900 animate-pulse">
@@ -23,13 +25,13 @@ const Loader = () => {
          
          <div className="w-40 lg:w-48 h-[2px] bg-neutral-200 relative overflow-hidden rounded-full">
             <div 
-              className="absolute top-0 left-0 h-full bg-medium-carmine-600 transition-all duration-200 ease-out" 
+              className="absolute top-0 left-0 h-full bg-medium-carmine-600 transition-all duration-300 ease-out" 
               style={{ width: `${progress}%` }} 
             />
          </div>
          
          <p className="mt-4 text-[9px] lg:text-[10px] uppercase tracking-[0.2em] text-neutral-400 font-bold">
-            Synchronizing Assets {Math.round(progress)}%
+            {progress < 100 ? `Synchronizing Assets ${Math.round(progress)}%` : 'Initializing View...'}
          </p>
       </div>
     </div>
@@ -46,9 +48,10 @@ interface SceneContentProps extends Omit<SceneProps, 'onEnterAR'> {
   resetTrigger: number;
   activeWaypoint: string;
   onWaypointChange: (wp: string) => void;
+  onTransitionStateChange: (state: boolean) => void;
 }
 
-const SceneContent: React.FC<SceneContentProps> = ({ config, activeTab, resetTrigger, activeWaypoint, onWaypointChange }) => {
+const SceneContent: React.FC<SceneContentProps> = ({ config, activeTab, resetTrigger, activeWaypoint, onWaypointChange, onTransitionStateChange }) => {
   const mode = useXR(state => state.mode);
   const isPresenting = mode === 'immersive-ar' || mode === 'immersive-vr';
   const controlsTarget = useMemo(() => [0, 1, 0], []);
@@ -65,6 +68,7 @@ const SceneContent: React.FC<SceneContentProps> = ({ config, activeTab, resetTri
           resetTrigger={resetTrigger}
           activeWaypoint={activeWaypoint}
           onWaypointChange={onWaypointChange}
+          onTransitionStateChange={onTransitionStateChange}
         />
         <ContactShadows 
           opacity={0.3} 
@@ -109,6 +113,7 @@ const Scene: React.FC<SceneProps> = ({ config, activeTab, onEnterAR }) => {
   const [resetTrigger, setResetTrigger] = useState(0);
   const [showQR, setShowQR] = useState(false);
   const [activeWaypoint, setActiveWaypoint] = useState('Waypoint1');
+  const [isTransitioning, setIsTransitioning] = useState(false);
 
   useEffect(() => {
     if (activeTab === ConfigCategory.INTERIOR) {
@@ -117,16 +122,19 @@ const Scene: React.FC<SceneProps> = ({ config, activeTab, onEnterAR }) => {
   }, [activeTab]);
 
   const handleARClick = () => {
-    // Detect mobile/tablet devices
+    triggerHaptic();
     const isMobileOrTablet = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
     
     if (isMobileOrTablet && onEnterAR) {
-      // Directly transition to AR mode on mobile/tablet
       onEnterAR();
     } else {
-      // Show QR code for desktop
       setShowQR(true);
     }
+  };
+
+  const handleResetClick = () => {
+    triggerHaptic();
+    setResetTrigger(prev => prev + 1);
   };
 
   const qrUrl = encodeURIComponent(`${window.location.origin}${window.location.pathname}?ar=true&material=${config.material}`);
@@ -134,11 +142,11 @@ const Scene: React.FC<SceneProps> = ({ config, activeTab, onEnterAR }) => {
 
   return (
     <div className="w-full h-full bg-[#f0f0f0] relative">
-       <Loader />
+       <Loader forcedActive={isTransitioning} />
        
       <div className="absolute bottom-4 lg:bottom-8 left-1/2 -translate-x-1/2 z-20 flex items-center gap-2.5 lg:gap-4 w-full justify-center pointer-events-none px-4">
         <button 
-          onClick={() => setResetTrigger(prev => prev + 1)}
+          onClick={handleResetClick}
           className="pointer-events-auto w-10 h-10 lg:w-auto lg:h-auto lg:py-3.5 lg:px-8 flex items-center justify-center bg-white/90 backdrop-blur-md border border-neutral-200 text-neutral-900 rounded-full lg:rounded-none text-[10px] lg:text-xs font-bold uppercase tracking-widest hover:border-neutral-900 transition-all shadow-xl lg:min-w-[160px] active:scale-95"
           title="Reset View"
         >
@@ -164,7 +172,7 @@ const Scene: React.FC<SceneProps> = ({ config, activeTab, onEnterAR }) => {
         <div className="absolute inset-0 z-[60] flex items-center justify-center bg-black/70 backdrop-blur-sm p-4 animate-[fadeIn_0.3s_ease-out]">
           <div className="bg-white p-6 lg:p-10 rounded-2xl shadow-2xl flex flex-col items-center max-w-sm w-full relative">
             <button 
-              onClick={() => setShowQR(false)}
+              onClick={() => { triggerHaptic(); setShowQR(false); }}
               className="absolute top-6 right-6 text-neutral-400 hover:text-neutral-900 transition-colors"
             >
                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor" className="w-6 h-6">
@@ -195,6 +203,7 @@ const Scene: React.FC<SceneProps> = ({ config, activeTab, onEnterAR }) => {
               resetTrigger={resetTrigger} 
               activeWaypoint={activeWaypoint}
               onWaypointChange={setActiveWaypoint}
+              onTransitionStateChange={setIsTransitioning}
             />
           </Suspense>
         </XR>

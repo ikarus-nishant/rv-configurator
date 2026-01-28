@@ -4,6 +4,7 @@ import Configurator from './components/Configurator';
 import ARView from './components/ARView';
 import { ProductConfig, ConfigCategory } from './types';
 import { INITIAL_CONFIG, CONFIG_DATA } from './constants';
+import { triggerHaptic } from './utils/haptics';
 
 function App() {
   const [config, setConfig] = useState<ProductConfig>(INITIAL_CONFIG);
@@ -18,13 +19,22 @@ function App() {
     }
   }, []);
 
+  const handleTabClick = (id: ConfigCategory) => {
+    triggerHaptic(8);
+    setActiveTab(id);
+  };
+
+  const handleSidebarToggle = () => {
+    triggerHaptic(5);
+    setIsSidebarOpen(!isSidebarOpen);
+  };
+
   if (isARMode) {
-    return <ARView config={config} onExit={() => setIsARMode(false)} />;
+    return <ARView config={config} onExit={() => { triggerHaptic(); setIsARMode(false); }} />;
   }
 
   const currentStepIndex = CONFIG_DATA.findIndex(c => c.id === activeTab);
 
-  // Mapping for cleaner labels in the top bar
   const stepLabels: Record<string, string> = {
     [ConfigCategory.SIZE]: 'Size',
     [ConfigCategory.FLOORPLAN]: 'Floorplan',
@@ -35,10 +45,7 @@ function App() {
 
   return (
     <div className="flex flex-col h-[100dvh] w-screen overflow-hidden bg-neutral-100 font-sans">
-      {/* Global Navigation Bar - Responsive Height */}
       <header className="flex-none h-16 lg:h-20 bg-[#111111] text-white flex items-center justify-center px-4 lg:px-8 z-30 shadow-md border-b border-white/5 relative">
-         
-         {/* Logo - Positioned Absolute Left */}
          <div className="absolute left-4 lg:left-8 flex items-center gap-3 top-1/2 -translate-y-1/2">
              <img 
               src="https://www.dropbox.com/scl/fi/fsxbk5lsvs01mey2xu0np/Logo.webp?rlkey=dwhud57pj0waxfrmt4da7mj62&dl=1" 
@@ -47,19 +54,15 @@ function App() {
             />
          </div>
 
-         {/* Desktop Steps Navigation - Adaptive Gap for Laptops */}
          <div className="hidden lg:flex items-center gap-4 xl:gap-8">
             {CONFIG_DATA.map((category, index) => {
                const isActive = activeTab === category.id;
                const isCompleted = index < currentStepIndex;
-               
                return (
-                  <div key={category.id} className="flex items-center group cursor-pointer" onClick={() => setActiveTab(category.id)}>
-                     {/* Divider Line */}
+                  <div key={category.id} className="flex items-center group cursor-pointer" onClick={() => handleTabClick(category.id)}>
                      {index > 0 && (
                        <div className={`w-8 xl:w-12 h-[1px] mx-2 xl:mx-4 ${isCompleted || isActive ? 'bg-neutral-600' : 'bg-neutral-800'}`} />
                      )}
-                     
                      <div className="flex items-center gap-2 xl:gap-3">
                        <div className={`
                           flex items-center justify-center w-7 h-7 xl:w-8 xl:h-8 rounded-full text-[9px] xl:text-[10px] font-bold transition-all duration-300 border
@@ -84,7 +87,6 @@ function App() {
             })}
          </div>
 
-         {/* Mobile Step Indicator */}
          <div className="lg:hidden flex items-center gap-2">
             <span className="text-[10px] font-bold px-2.5 py-1 bg-neutral-800 rounded text-neutral-300 uppercase tracking-widest border border-neutral-700">
                Step {currentStepIndex + 1}/{CONFIG_DATA.length}
@@ -92,18 +94,15 @@ function App() {
          </div>
       </header>
 
-      {/* Main Content Area - Responsive Heights */}
       <div className="flex-1 flex flex-col lg:flex-row relative overflow-hidden w-full">
-        {/* 3D Canvas Area - Adaptive Size */}
         <div className="relative w-full lg:flex-1 h-[45%] lg:h-full order-1 lg:order-1 min-w-0 bg-[#f0f0f0]">
           <Scene 
             config={config} 
             activeTab={activeTab} 
-            onEnterAR={() => setIsARMode(true)} 
+            onEnterAR={() => { triggerHaptic(15); setIsARMode(true); }} 
           />
         </div>
 
-        {/* Configuration Menu - Laptop/Desktop Side Panel */}
         <div 
           className={`
             relative h-[55%] lg:h-full z-20 order-2 lg:order-2 flex-none
@@ -111,9 +110,8 @@ function App() {
             ${isSidebarOpen ? 'w-full lg:w-[25%]' : 'w-full lg:w-0'}
           `}
         >
-           {/* Toggle Button (Desktop Only) */}
            <button 
-             onClick={() => setIsSidebarOpen(!isSidebarOpen)}
+             onClick={handleSidebarToggle}
              className={`
                hidden lg:flex absolute top-1/2 left-0 z-50
                items-center justify-center w-6 h-12 
@@ -138,7 +136,6 @@ function App() {
                </svg>
            </button>
 
-           {/* Inner Content Mask */}
            <div className="absolute inset-0 overflow-hidden bg-white lg:border-l border-neutral-200">
               <div className="w-full h-full">
                 <Configurator 
