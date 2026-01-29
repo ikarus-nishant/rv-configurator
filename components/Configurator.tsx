@@ -113,9 +113,7 @@ const Configurator: React.FC<ConfiguratorProps> = ({ config, setConfig, activeTa
        [ConfigCategory.SIZE]: 'Size',
        [ConfigCategory.FLOORPLAN]: 'Floorplan',
        [ConfigCategory.EXTERIOR]: 'Exterior',
-       [ConfigCategory.ADDONS]: 'Add-Ons',
        [ConfigCategory.INTERIOR]: 'Interior',
-       [ConfigCategory.CABINETS]: 'Cabinets',
        [ConfigCategory.SUMMARY]: 'Summary',
      };
      return `Continue to ${labelMap[nextCat.id] || 'Next'}`;

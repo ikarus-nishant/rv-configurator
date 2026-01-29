@@ -62,9 +62,7 @@ function App() {
     [ConfigCategory.SIZE]: 'Size',
     [ConfigCategory.FLOORPLAN]: 'Floorplan',
     [ConfigCategory.EXTERIOR]: 'Exterior',
-    [ConfigCategory.ADDONS]: 'Add-Ons',
     [ConfigCategory.INTERIOR]: 'Interior',
-    [ConfigCategory.CABINETS]: 'Cabinets',
     [ConfigCategory.SUMMARY]: 'Summary'
   };
 

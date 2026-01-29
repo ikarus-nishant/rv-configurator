@@ -4,9 +4,7 @@ export enum ConfigCategory {
   SIZE = 'Size',
   FLOORPLAN = 'Floorplan',
   EXTERIOR = 'Exterior',
-  ADDONS = 'Addons',
   INTERIOR = 'Interior',
-  CABINETS = 'Cabinets',
   SUMMARY = 'Summary'
 }
 

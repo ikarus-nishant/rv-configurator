@@ -97,12 +97,7 @@ export const CONFIG_DATA: CategoryData[] = [
             description: 'A muted, earthy forest drab with a flat matte texture.'
           },
         ]
-      }
-    ]
-  },
-  {
-    id: ConfigCategory.ADDONS,
-    sections: [
+      },
       {
         title: 'Exterior Add-ons',
         stateKey: 'exterior',
@@ -145,12 +140,7 @@ export const CONFIG_DATA: CategoryData[] = [
           { id: 'urban', label: 'Urban Loft', price: 1500, description: 'High-gloss cabinetry, dark accents, modern tech.' },
           { id: 'lodge', label: 'Mountain Lodge', price: 2500, description: 'Warm walnut, leather seating, cozy textiles.' },
         ]
-      }
-    ]
-  },
-  {
-    id: ConfigCategory.CABINETS,
-    sections: [
+      },
       {
         title: 'Select Cabinets',
         stateKey: 'cabinets',
