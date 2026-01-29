@@ -62,7 +62,9 @@ function App() {
     [ConfigCategory.SIZE]: 'Size',
     [ConfigCategory.FLOORPLAN]: 'Floorplan',
     [ConfigCategory.EXTERIOR]: 'Exterior',
+    [ConfigCategory.ADDONS]: 'Add-Ons',
     [ConfigCategory.INTERIOR]: 'Interior',
+    [ConfigCategory.CABINETS]: 'Cabinets',
     [ConfigCategory.SUMMARY]: 'Summary'
   };
 
@@ -122,8 +124,8 @@ function App() {
                             index + 1
                           )}
                        </div>
-                       {/* Labels always visible now */}
-                       <span className={`text-[10px] lg:text-xs font-bold uppercase tracking-[0.2em] transition-all duration-300 ${isActive ? 'text-white translate-y-0 opacity-100' : 'text-neutral-500 group-hover:text-neutral-400'}`}>
+                       {/* Labels Typography Update: Overpass Medium 14px */}
+                       <span className={`text-[14px] font-medium font-overpass uppercase tracking-widest transition-all duration-300 ${isActive ? 'text-white translate-y-0 opacity-100' : 'text-neutral-500 group-hover:text-neutral-400'}`}>
                           {stepLabels[category.id] || category.id}
                        </span>
                      </div>
@@ -170,7 +172,7 @@ function App() {
                items-center justify-center w-8 h-16 
                bg-white border-y border-l border-neutral-200 shadow-[-8px_0_20px_rgba(0,0,0,0.05)]
                rounded-none text-medium-carmine-600
-               hover:bg-neutral-50 hover:text-medium-carmine-700 hover:pl-1
+               hover:bg-neutral-50 hover:text-medium-carmine-700 hover:pb-1
                transition-all duration-300
                -translate-x-full
                cursor-pointer outline-none focus:outline-none

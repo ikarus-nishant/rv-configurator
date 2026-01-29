@@ -40,7 +40,7 @@ const Loader = ({ forcedActive = false }: { forcedActive?: boolean }) => {
       className={`absolute inset-0 z-50 flex flex-col items-center justify-center bg-[#f0f0f0] transition-opacity duration-500 ${isActuallyActive ? 'opacity-100' : 'opacity-0 pointer-events-none'}`}
     >
       <div className="flex flex-col items-center px-6 text-center">
-         <div className="text-xl lg:text-3xl font-light mb-8 tracking-tight text-neutral-900 animate-pulse">
+         <div className="text-xl lg:text-3xl font-light font-overpass mb-8 tracking-tight text-neutral-900 animate-pulse">
             Ikarus <span className="font-semibold text-medium-carmine-700">Delta</span>
          </div>
          
@@ -51,7 +51,7 @@ const Loader = ({ forcedActive = false }: { forcedActive?: boolean }) => {
             />
          </div>
          
-         <p className="mt-4 text-[9px] lg:text-[10px] uppercase tracking-[0.2em] text-neutral-400 font-bold">
+         <p className="mt-4 text-[10px] font-normal font-heebo uppercase tracking-[0.2em] text-neutral-400">
             {progress < 100 ? `Synchronizing Assets ${Math.round(progress)}%` : 'Initializing View...'}
          </p>
       </div>
@@ -163,15 +163,13 @@ const Scene: React.FC<SceneProps> = ({ config, activeTab, onEnterAR }) => {
 
   return (
     <div className="w-full h-full bg-[#f0f0f0] relative">
-       {/* Product Title Overlay */}
-       <div className="absolute top-6 left-6 lg:top-12 lg:left-12 z-10 pointer-events-none select-none">
-          <h1 className="text-3xl lg:text-5xl font-black text-neutral-900 tracking-tighter uppercase opacity-90">
-            Flying Cloud
-          </h1>
-          <div className="flex items-center gap-2 mt-2">
-             <div className="h-[2px] w-8 bg-medium-carmine-600"></div>
-             <span className="text-[10px] font-bold tracking-[0.2em] text-neutral-500 uppercase">2025 Model Year</span>
-          </div>
+       {/* Mobile Logo Overlay - Bottom Left */}
+       <div className="absolute bottom-6 left-6 z-10 pointer-events-none select-none lg:hidden">
+          <img 
+            src="https://www.dropbox.com/scl/fi/fsxbk5lsvs01mey2xu0np/Logo.webp?rlkey=dwhud57pj0waxfrmt4da7mj62&dl=1" 
+            alt="Ikarus Delta Logo" 
+            className="h-8 w-auto brightness-0 opacity-80 object-contain"
+          />
        </div>
 
        <Loader forcedActive={isTransitioning} />
@@ -193,7 +191,7 @@ const Scene: React.FC<SceneProps> = ({ config, activeTab, onEnterAR }) => {
 
              /* Desktop Styles */
              lg:w-auto lg:h-auto lg:rounded-none lg:py-4 lg:px-10 lg:min-w-[160px] 
-             lg:text-xs lg:lg:text-sm lg:font-bold lg:uppercase lg:tracking-[0.15em]
+             lg:text-[14px] lg:font-medium lg:font-overpass lg:uppercase lg:tracking-[0.15em]
           `}
           aria-label="Reset Camera"
         >
@@ -219,7 +217,7 @@ const Scene: React.FC<SceneProps> = ({ config, activeTab, onEnterAR }) => {
 
              /* Desktop Styles */
              lg:w-auto lg:h-auto lg:rounded-none lg:py-4 lg:px-10 lg:min-w-[160px] 
-             lg:text-xs lg:lg:text-sm lg:font-bold lg:uppercase lg:tracking-[0.15em]
+             lg:text-[14px] lg:font-medium lg:font-overpass lg:uppercase lg:tracking-[0.15em]
           `}
           aria-label="View in AR"
         >
@@ -246,14 +244,14 @@ const Scene: React.FC<SceneProps> = ({ config, activeTab, onEnterAR }) => {
                </svg>
             </button>
             
-            <h3 className="text-lg lg:text-xl font-bold text-neutral-900 mb-2 uppercase tracking-widest">AR Portal</h3>
-            <p className="text-[10px] text-neutral-400 mb-8 text-center uppercase tracking-widest font-bold">Scan to launch experience</p>
+            <h3 className="text-lg lg:text-xl font-bold font-overpass text-neutral-900 mb-2 uppercase tracking-widest">AR Portal</h3>
+            <p className="text-[10px] font-normal font-heebo text-neutral-400 mb-8 text-center uppercase tracking-widest">Scan to launch experience</p>
             
             <div className="p-3 border border-neutral-100 rounded-none shadow-inner bg-neutral-50 mb-8">
                <img src={qrImageSrc} alt="AR QR Code" className="w-40 h-40 lg:w-48 lg:h-48 mix-blend-multiply" />
             </div>
 
-            <p className="text-center text-[10px] text-neutral-400 leading-relaxed uppercase tracking-widest font-bold px-4">
+            <p className="text-center text-[10px] font-normal font-heebo text-neutral-400 leading-relaxed uppercase tracking-widest px-4">
               Requires an AR-compatible mobile device
             </p>
           </div>
