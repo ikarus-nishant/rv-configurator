@@ -147,7 +147,7 @@ function App() {
       </header>
 
       <div className="flex-1 flex flex-col lg:flex-row relative overflow-hidden w-full">
-        <div className="relative w-full lg:flex-1 h-[45%] lg:h-full order-1 lg:order-1 min-w-0 bg-[#f0f0f0]">
+        <div className={`relative w-full lg:flex-1 transition-[height] duration-500 ease-[cubic-bezier(0.25,1,0.5,1)] order-1 lg:order-1 min-w-0 bg-[#f0f0f0] ${isSidebarOpen ? 'h-[45%] lg:h-full' : 'h-full lg:h-full'}`}>
           <Scene 
             config={config} 
             activeTab={activeTab} 
@@ -157,18 +157,19 @@ function App() {
 
         <div 
           className={`
-            relative h-[55%] lg:h-full z-20 order-2 lg:order-2 flex-none
+            relative z-20 order-2 lg:order-2 flex-none
             shadow-2xl transition-[width,height] duration-500 ease-[cubic-bezier(0.25,1,0.5,1)] bg-white
-            ${isSidebarOpen ? 'w-full lg:w-[28%]' : 'w-full lg:w-0'}
+            ${isSidebarOpen ? 'h-[55%] w-full lg:h-full lg:w-[28%]' : 'h-0 w-full lg:h-full lg:w-0'}
           `}
         >
+           {/* Desktop Toggle Button */}
            <button 
              onClick={handleSidebarToggle}
              className={`
                hidden lg:flex absolute top-1/2 left-0 z-50
                items-center justify-center w-8 h-16 
                bg-white border-y border-l border-neutral-200 shadow-[-8px_0_20px_rgba(0,0,0,0.05)]
-               rounded-l-xl text-medium-carmine-600
+               rounded-none text-medium-carmine-600
                hover:bg-neutral-50 hover:text-medium-carmine-700 hover:pl-1
                transition-all duration-300
                -translate-x-full
@@ -183,6 +184,33 @@ function App() {
                  strokeWidth={2.5} 
                  stroke="currentColor" 
                  className={`w-5 h-5 transition-transform duration-500 ${isSidebarOpen ? 'rotate-0' : 'rotate-180'}`}
+               >
+                 <path strokeLinecap="round" strokeLinejoin="round" d="M8.25 4.5l7.5 7.5-7.5 7.5" />
+               </svg>
+           </button>
+
+           {/* Mobile Toggle Button */}
+           <button 
+             onClick={handleSidebarToggle}
+             className={`
+               lg:hidden flex absolute top-0 left-1/2 z-50
+               items-center justify-center w-16 h-8 
+               bg-white border-x border-t border-neutral-200 shadow-[0_-4px_20px_rgba(0,0,0,0.05)]
+               rounded-none text-medium-carmine-600
+               hover:bg-neutral-50 hover:text-medium-carmine-700 hover:pb-1
+               transition-all duration-300
+               -translate-x-1/2 -translate-y-full
+               cursor-pointer outline-none focus:outline-none
+             `}
+             title={isSidebarOpen ? "Collapse Menu" : "Expand Menu"}
+           >
+               <svg 
+                 xmlns="http://www.w3.org/2000/svg" 
+                 fill="none" 
+                 viewBox="0 0 24 24" 
+                 strokeWidth={2.5} 
+                 stroke="currentColor" 
+                 className={`w-5 h-5 transition-transform duration-500 ${isSidebarOpen ? 'rotate-90' : '-rotate-90'}`}
                >
                  <path strokeLinecap="round" strokeLinejoin="round" d="M8.25 4.5l7.5 7.5-7.5 7.5" />
                </svg>

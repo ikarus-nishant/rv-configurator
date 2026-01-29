@@ -6,18 +6,27 @@ import { OrbitControls as OrbitControlsImpl } from 'three-stdlib';
 import { ProductConfig, ConfigCategory } from '../types';
 import { CONFIG_DATA } from '../constants';
 
-// Ensure all R3F elements used are defined in JSX.IntrinsicElements
-declare global {
+// Augment React's JSX namespace for R3F elements
+declare module 'react' {
   namespace JSX {
     interface IntrinsicElements {
-      group: any;
       primitive: any;
+      group: any;
       mesh: any;
       sphereGeometry: any;
       meshBasicMaterial: any;
-      ambientLight: any;
-      spotLight: any;
-      'model-viewer': any;
+    }
+  }
+}
+
+declare global {
+  namespace JSX {
+    interface IntrinsicElements {
+      primitive: any;
+      group: any;
+      mesh: any;
+      sphereGeometry: any;
+      meshBasicMaterial: any;
     }
   }
 }

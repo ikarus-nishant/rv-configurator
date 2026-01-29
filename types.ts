@@ -1,3 +1,5 @@
+
+
 export enum ConfigCategory {
   SIZE = 'Size',
   FLOORPLAN = 'Floorplan',
@@ -41,13 +43,14 @@ declare global {
   namespace JSX {
     interface IntrinsicElements {
       group: any;
-      primitive: any;
-      ambientLight: any;
-      spotLight: any;
       mesh: any;
+      primitive: any;
       sphereGeometry: any;
       meshBasicMaterial: any;
+      ambientLight: any;
+      spotLight: any;
       'model-viewer': any;
+      [elemName: string]: any;
     }
   }
 }

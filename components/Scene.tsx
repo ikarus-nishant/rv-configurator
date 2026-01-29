@@ -6,17 +6,23 @@ import ProductModel from './ProductModel';
 import { ProductConfig, ConfigCategory } from '../types';
 import { triggerHaptic } from '../utils/haptics';
 
-// Ensure all R3F elements used are defined in JSX.IntrinsicElements
+// Augment React's JSX namespace for R3F elements
+declare module 'react' {
+  namespace JSX {
+    interface IntrinsicElements {
+      group: any;
+      ambientLight: any;
+      spotLight: any;
+    }
+  }
+}
+
 declare global {
   namespace JSX {
     interface IntrinsicElements {
       group: any;
       ambientLight: any;
       spotLight: any;
-      primitive: any;
-      mesh: any;
-      sphereGeometry: any;
-      meshBasicMaterial: any;
     }
   }
 }
@@ -38,7 +44,7 @@ const Loader = ({ forcedActive = false }: { forcedActive?: boolean }) => {
             Ikarus <span className="font-semibold text-medium-carmine-700">Delta</span>
          </div>
          
-         <div className="w-40 lg:w-48 h-[2px] bg-neutral-200 relative overflow-hidden rounded-full">
+         <div className="w-40 lg:w-48 h-[2px] bg-neutral-200 relative overflow-hidden rounded-none">
             <div 
               className="absolute top-0 left-0 h-full bg-medium-carmine-600 transition-all duration-300 ease-out" 
               style={{ width: `${progress}%` }} 
@@ -159,33 +165,27 @@ const Scene: React.FC<SceneProps> = ({ config, activeTab, onEnterAR }) => {
     <div className="w-full h-full bg-[#f0f0f0] relative">
        <Loader forcedActive={isTransitioning} />
        
-      <div className="absolute bottom-6 left-1/2 -translate-x-1/2 z-20 flex items-center gap-4 w-full justify-center pointer-events-none px-4">
+      <div className="absolute bottom-8 left-1/2 -translate-x-1/2 z-20 flex items-center gap-6 pointer-events-none">
         {/* Reset View Button */}
         <button 
           onClick={handleResetClick}
-          className="pointer-events-auto w-12 h-12 flex items-center justify-center bg-white rounded-full text-neutral-900 shadow-lg hover:bg-neutral-50 hover:scale-105 active:scale-95 transition-all"
-          title="Reset View"
+          className="pointer-events-auto bg-white text-neutral-900 text-xs lg:text-sm font-bold uppercase tracking-[0.15em] py-4 px-8 lg:px-10 shadow-xl hover:bg-neutral-50 transition-all active:scale-[0.98] rounded-none min-w-[160px]"
         >
-          <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="w-6 h-6">
-             <path strokeLinecap="round" strokeLinejoin="round" d="M16.023 9.348h4.992v-.001M2.985 19.644v-4.992m0 0h4.992m-4.993 0l3.181 3.183a8.25 8.25 0 0013.803-3.7M4.031 9.865a8.25 8.25 0 0113.803-3.7l3.181 3.182m0-4.991v4.99" />
-          </svg>
+          Reset Camera
         </button>
 
         {/* AR Button */}
         <button 
           onClick={handleARClick}
-          className="pointer-events-auto w-12 h-12 flex items-center justify-center bg-medium-carmine-600 text-white rounded-full shadow-lg shadow-medium-carmine-600/30 hover:bg-medium-carmine-700 hover:scale-105 active:scale-95 transition-all"
-          title="View in AR"
+          className="pointer-events-auto bg-[#a9342c] text-white text-xs lg:text-sm font-bold uppercase tracking-[0.15em] py-4 px-8 lg:px-10 shadow-xl shadow-[#a9342c]/20 hover:bg-[#8c2f28] transition-all active:scale-[0.98] rounded-none min-w-[160px]"
         >
-          <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="w-6 h-6">
-            <path strokeLinecap="round" strokeLinejoin="round" d="M21 7.5l-9-5.25L3 7.5m18 0l-9 5.25m9-5.25v9l-9 5.25M3 7.5l9 5.25M3 7.5v9l9 5.25m0-9v9" />
-          </svg>
+          View in AR
         </button>
       </div>
 
        {showQR && (
         <div className="absolute inset-0 z-[60] flex items-center justify-center bg-black/70 backdrop-blur-sm p-4 animate-[fadeIn_0.3s_ease-out]">
-          <div className="bg-white p-6 lg:p-10 rounded-2xl shadow-2xl flex flex-col items-center max-w-sm w-full relative">
+          <div className="bg-white p-6 lg:p-10 rounded-none shadow-2xl flex flex-col items-center max-w-sm w-full relative">
             <button 
               onClick={() => { triggerHaptic(); setShowQR(false); }}
               className="absolute top-6 right-6 text-neutral-400 hover:text-neutral-900 transition-colors"
@@ -198,7 +198,7 @@ const Scene: React.FC<SceneProps> = ({ config, activeTab, onEnterAR }) => {
             <h3 className="text-lg lg:text-xl font-bold text-neutral-900 mb-2 uppercase tracking-widest">AR Portal</h3>
             <p className="text-[10px] text-neutral-400 mb-8 text-center uppercase tracking-widest font-bold">Scan to launch experience</p>
             
-            <div className="p-3 border border-neutral-100 rounded-2xl shadow-inner bg-neutral-50 mb-8">
+            <div className="p-3 border border-neutral-100 rounded-none shadow-inner bg-neutral-50 mb-8">
                <img src={qrImageSrc} alt="AR QR Code" className="w-40 h-40 lg:w-48 lg:h-48 mix-blend-multiply" />
             </div>
 
