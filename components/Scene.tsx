@@ -163,23 +163,74 @@ const Scene: React.FC<SceneProps> = ({ config, activeTab, onEnterAR }) => {
 
   return (
     <div className="w-full h-full bg-[#f0f0f0] relative">
+       {/* Product Title Overlay */}
+       <div className="absolute top-6 left-6 lg:top-12 lg:left-12 z-10 pointer-events-none select-none">
+          <h1 className="text-3xl lg:text-5xl font-black text-neutral-900 tracking-tighter uppercase opacity-90">
+            Flying Cloud
+          </h1>
+          <div className="flex items-center gap-2 mt-2">
+             <div className="h-[2px] w-8 bg-medium-carmine-600"></div>
+             <span className="text-[10px] font-bold tracking-[0.2em] text-neutral-500 uppercase">2025 Model Year</span>
+          </div>
+       </div>
+
        <Loader forcedActive={isTransitioning} />
        
-      <div className="absolute bottom-8 left-1/2 -translate-x-1/2 z-20 flex items-center gap-6 pointer-events-none">
+      <div className={`
+          absolute z-20 pointer-events-none
+          top-4 right-4 flex flex-col items-end gap-3
+          lg:top-auto lg:right-auto lg:bottom-8 lg:left-1/2 lg:-translate-x-1/2 lg:flex-row lg:items-center lg:gap-6
+      `}>
         {/* Reset View Button */}
         <button 
           onClick={handleResetClick}
-          className="pointer-events-auto bg-white text-neutral-900 text-xs lg:text-sm font-bold uppercase tracking-[0.15em] py-4 px-8 lg:px-10 shadow-xl hover:bg-neutral-50 transition-all active:scale-[0.98] rounded-none min-w-[160px]"
+          className={`
+             pointer-events-auto bg-white text-neutral-900 
+             shadow-xl hover:bg-neutral-50 transition-all active:scale-[0.98] 
+             
+             /* Mobile Styles */
+             w-12 h-12 flex items-center justify-center rounded-full
+
+             /* Desktop Styles */
+             lg:w-auto lg:h-auto lg:rounded-none lg:py-4 lg:px-10 lg:min-w-[160px] 
+             lg:text-xs lg:lg:text-sm lg:font-bold lg:uppercase lg:tracking-[0.15em]
+          `}
+          aria-label="Reset Camera"
         >
-          Reset Camera
+          {/* Mobile Icon */}
+          <span className="lg:hidden">
+            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor" className="w-5 h-5">
+              <path strokeLinecap="round" strokeLinejoin="round" d="M16.023 9.348h4.992v-.001M2.985 19.644v-4.992m0 0h4.992m-4.993 0l3.181 3.183a8.25 8.25 0 0013.803-3.7M4.031 9.865a8.25 8.25 0 0113.803-3.7l3.181 3.182m0-4.991v4.99" />
+            </svg>
+          </span>
+          {/* Desktop Text */}
+          <span className="hidden lg:inline">Reset Camera</span>
         </button>
 
         {/* AR Button */}
         <button 
           onClick={handleARClick}
-          className="pointer-events-auto bg-[#a9342c] text-white text-xs lg:text-sm font-bold uppercase tracking-[0.15em] py-4 px-8 lg:px-10 shadow-xl shadow-[#a9342c]/20 hover:bg-[#8c2f28] transition-all active:scale-[0.98] rounded-none min-w-[160px]"
+          className={`
+             pointer-events-auto bg-[#a9342c] text-white 
+             shadow-xl shadow-[#a9342c]/20 hover:bg-[#8c2f28] transition-all active:scale-[0.98] 
+             
+             /* Mobile Styles */
+             w-12 h-12 flex items-center justify-center rounded-full
+
+             /* Desktop Styles */
+             lg:w-auto lg:h-auto lg:rounded-none lg:py-4 lg:px-10 lg:min-w-[160px] 
+             lg:text-xs lg:lg:text-sm lg:font-bold lg:uppercase lg:tracking-[0.15em]
+          `}
+          aria-label="View in AR"
         >
-          View in AR
+          {/* Mobile Icon */}
+          <span className="lg:hidden">
+            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor" className="w-5 h-5">
+              <path strokeLinecap="round" strokeLinejoin="round" d="M21 7.5l-9-5.25L3 7.5m18 0l-9 5.25m9-5.25v9l-9 5.25M3 7.5l9 5.25M3 7.5v9l9 5.25m0-9v9" />
+            </svg>
+          </span>
+          {/* Desktop Text */}
+          <span className="hidden lg:inline">View in AR</span>
         </button>
       </div>
 
