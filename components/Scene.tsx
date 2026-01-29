@@ -6,6 +6,21 @@ import ProductModel from './ProductModel';
 import { ProductConfig, ConfigCategory } from '../types';
 import { triggerHaptic } from '../utils/haptics';
 
+// Ensure all R3F elements used are defined in JSX.IntrinsicElements
+declare global {
+  namespace JSX {
+    interface IntrinsicElements {
+      group: any;
+      ambientLight: any;
+      spotLight: any;
+      primitive: any;
+      mesh: any;
+      sphereGeometry: any;
+      meshBasicMaterial: any;
+    }
+  }
+}
+
 // Initialize XR Store
 const store = createXRStore();
 
@@ -144,27 +159,27 @@ const Scene: React.FC<SceneProps> = ({ config, activeTab, onEnterAR }) => {
     <div className="w-full h-full bg-[#f0f0f0] relative">
        <Loader forcedActive={isTransitioning} />
        
-      <div className="absolute bottom-4 lg:bottom-8 left-1/2 -translate-x-1/2 z-20 flex items-center gap-2.5 lg:gap-4 w-full justify-center pointer-events-none px-4">
+      <div className="absolute bottom-6 left-1/2 -translate-x-1/2 z-20 flex items-center gap-4 w-full justify-center pointer-events-none px-4">
+        {/* Reset View Button */}
         <button 
           onClick={handleResetClick}
-          className="pointer-events-auto w-10 h-10 lg:w-auto lg:h-auto lg:py-3.5 lg:px-8 flex items-center justify-center bg-white/90 backdrop-blur-md border border-neutral-200 text-neutral-900 rounded-full lg:rounded-none text-[10px] lg:text-xs font-bold uppercase tracking-widest hover:border-neutral-900 transition-all shadow-xl lg:min-w-[160px] active:scale-95"
+          className="pointer-events-auto w-12 h-12 flex items-center justify-center bg-white rounded-full text-neutral-900 shadow-lg hover:bg-neutral-50 hover:scale-105 active:scale-95 transition-all"
           title="Reset View"
         >
-          <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="w-5 h-5 lg:hidden">
-            <path strokeLinecap="round" strokeLinejoin="round" d="M16.023 9.348h4.992v-.001M2.985 19.644v-4.992m0 0h4.992m-4.993 0l3.181 3.183a8.25 8.25 0 0013.803-3.7M4.031 9.865a8.25 8.25 0 0113.803-3.7l3.181 3.182m0-4.991v4.99" />
+          <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="w-6 h-6">
+             <path strokeLinecap="round" strokeLinejoin="round" d="M16.023 9.348h4.992v-.001M2.985 19.644v-4.992m0 0h4.992m-4.993 0l3.181 3.183a8.25 8.25 0 0013.803-3.7M4.031 9.865a8.25 8.25 0 0113.803-3.7l3.181 3.182m0-4.991v4.99" />
           </svg>
-          <span className="hidden lg:inline">Reset View</span>
         </button>
 
+        {/* AR Button */}
         <button 
           onClick={handleARClick}
-          className="pointer-events-auto w-10 h-10 lg:w-auto lg:h-auto lg:py-3.5 lg:px-8 flex items-center justify-center bg-medium-carmine-600 text-white rounded-full lg:rounded-none text-[10px] lg:text-xs font-bold uppercase tracking-widest hover:bg-medium-carmine-700 transition-all shadow-xl lg:min-w-[160px] border border-transparent active:scale-95"
+          className="pointer-events-auto w-12 h-12 flex items-center justify-center bg-medium-carmine-600 text-white rounded-full shadow-lg shadow-medium-carmine-600/30 hover:bg-medium-carmine-700 hover:scale-105 active:scale-95 transition-all"
           title="View in AR"
         >
-          <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="w-5 h-5 lg:hidden">
+          <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="w-6 h-6">
             <path strokeLinecap="round" strokeLinejoin="round" d="M21 7.5l-9-5.25L3 7.5m18 0l-9 5.25m9-5.25v9l-9 5.25M3 7.5l9 5.25M3 7.5v9l9 5.25m0-9v9" />
           </svg>
-           <span className="hidden lg:inline">View in AR</span>
         </button>
       </div>
 

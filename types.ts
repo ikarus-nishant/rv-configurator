@@ -1,6 +1,3 @@
-
-import React from 'react';
-
 export enum ConfigCategory {
   SIZE = 'Size',
   FLOORPLAN = 'Floorplan',
@@ -40,9 +37,6 @@ export interface CategoryData {
   sections: ConfigSection[];
 }
 
-/**
- * Augment the global JSX namespace to include custom elements.
- */
 declare global {
   namespace JSX {
     interface IntrinsicElements {
@@ -54,7 +48,6 @@ declare global {
       sphereGeometry: any;
       meshBasicMaterial: any;
       'model-viewer': any;
-      [elemName: string]: any;
     }
   }
 }

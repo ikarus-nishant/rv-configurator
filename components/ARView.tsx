@@ -1,6 +1,16 @@
 import React, { useEffect, useRef } from 'react';
 import { CONFIG_DATA } from '../constants';
 import { ConfigCategory, ProductConfig } from '../types';
+import { triggerHaptic } from '../utils/haptics';
+
+// Ensure model-viewer is defined in JSX.IntrinsicElements
+declare global {
+  namespace JSX {
+    interface IntrinsicElements {
+      'model-viewer': any;
+    }
+  }
+}
 
 interface ARViewProps {
   config?: ProductConfig;
@@ -63,6 +73,7 @@ const ARView: React.FC<ARViewProps> = ({ config, onExit }) => {
   }, [config]);
 
   const handleClose = (e: React.MouseEvent) => {
+    triggerHaptic();
     if (onExit) {
       e.preventDefault();
       onExit();
@@ -70,22 +81,24 @@ const ARView: React.FC<ARViewProps> = ({ config, onExit }) => {
   };
 
   return (
-    <div className="w-full h-screen bg-white relative flex flex-col items-center justify-center">
+    <div className="w-full h-screen bg-neutral-100 relative flex flex-col items-center justify-center">
       {/* Back Button */}
       <a 
         href={window.location.pathname} 
         onClick={handleClose}
-        className="absolute top-4 left-4 z-20 bg-white/80 backdrop-blur-md p-2 rounded-full shadow-lg border border-neutral-200 text-neutral-800"
+        className="absolute top-6 left-6 z-20 bg-white/90 backdrop-blur-md p-3 rounded-full shadow-xl border border-neutral-200 text-neutral-900 hover:scale-105 active:scale-95 transition-all"
+        aria-label="Exit AR"
       >
-        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="w-6 h-6">
+        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor" className="w-5 h-5">
           <path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12" />
         </svg>
       </a>
 
-      <div className="absolute top-4 w-full text-center z-10 pointer-events-none">
-        <h1 className="text-sm font-semibold text-neutral-900 bg-white/90 inline-block px-4 py-1 rounded-full shadow-sm backdrop-blur">
-            AR Mode
-        </h1>
+      {/* Header Badge */}
+      <div className="absolute top-6 w-full text-center z-10 pointer-events-none">
+        <span className="text-[10px] font-bold px-5 py-2 bg-neutral-900/90 backdrop-blur rounded-full text-white uppercase tracking-widest border border-neutral-700/50 shadow-lg">
+            AR Experience
+        </span>
       </div>
 
       <model-viewer
@@ -100,9 +113,12 @@ const ARView: React.FC<ARViewProps> = ({ config, onExit }) => {
       >
         <button 
             slot="ar-button" 
-            className="absolute bottom-8 left-1/2 -translate-x-1/2 bg-medium-carmine-600 text-white px-6 py-3 rounded-full font-medium text-sm shadow-lg border-none outline-none whitespace-nowrap"
+            className="absolute bottom-8 left-1/2 -translate-x-1/2 w-14 h-14 bg-medium-carmine-600 rounded-full shadow-lg shadow-medium-carmine-600/40 flex items-center justify-center text-white active:scale-95 transition-transform"
+            aria-label="View in Space"
         >
-            👋 Tap to Place in Room
+            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="w-6 h-6">
+                <path strokeLinecap="round" strokeLinejoin="round" d="M21 7.5l-9-5.25L3 7.5m18 0l-9 5.25m9-5.25v9l-9 5.25M3 7.5l9 5.25M3 7.5v9l9 5.25m0-9v9" />
+            </svg>
         </button>
       </model-viewer>
     </div>

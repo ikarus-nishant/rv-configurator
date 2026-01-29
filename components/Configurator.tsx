@@ -1,4 +1,4 @@
-import React, { useState, useRef } from 'react';
+import React, { useState } from 'react';
 import { CONFIG_DATA } from '../constants';
 import { ProductConfig, ConfigCategory } from '../types';
 import { triggerHaptic } from '../utils/haptics';
@@ -26,25 +26,8 @@ const SummaryLine = ({ label, value, price }: { label: string, value?: string, p
 );
 
 const Configurator: React.FC<ConfiguratorProps> = ({ config, setConfig, activeTab, setActiveTab }) => {
-  const scrollContainerRef = useRef<HTMLDivElement>(null);
-
   const [isFormOpen, setIsFormOpen] = useState(false);
   const [isSuccessOpen, setIsSuccessOpen] = useState(false);
-
-  const scrollTabs = (direction: 'left' | 'right') => {
-    triggerHaptic(5);
-    if (scrollContainerRef.current) {
-      const scrollAmount = 200;
-      const newScrollLeft = direction === 'left' 
-        ? scrollContainerRef.current.scrollLeft - scrollAmount 
-        : scrollContainerRef.current.scrollLeft + scrollAmount;
-      
-      scrollContainerRef.current.scrollTo({
-        left: newScrollLeft,
-        behavior: 'smooth'
-      });
-    }
-  };
 
   const calculateTotal = () => {
     let total = 0;
@@ -97,11 +80,6 @@ const Configurator: React.FC<ConfiguratorProps> = ({ config, setConfig, activeTa
   const activeCategoryData = CONFIG_DATA.find(c => c.id === activeTab);
   const currentStepIndex = CONFIG_DATA.findIndex(c => c.id === activeTab);
   const isLastStep = currentStepIndex === CONFIG_DATA.length - 1;
-
-  const handleTabClick = (id: ConfigCategory) => {
-    triggerHaptic(8);
-    setActiveTab(id);
-  };
 
   const handleNextStep = () => {
     triggerHaptic(12);
@@ -157,28 +135,6 @@ const Configurator: React.FC<ConfiguratorProps> = ({ config, setConfig, activeTa
     <>
       <div className="flex flex-col h-full bg-white text-neutral-900 overflow-hidden relative z-0">
         
-        {/* Mobile Tabs */}
-        <div className="flex lg:hidden items-center border-b border-neutral-100 bg-white relative flex-none shadow-sm z-10">
-          <button onClick={() => scrollTabs('left')} className="p-3 text-neutral-400 focus:outline-none active:text-neutral-900">
-            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="w-5 h-5"><path strokeLinecap="round" strokeLinejoin="round" d="M15.75 19.5L8.25 12l7.5-7.5" /></svg>
-          </button>
-          <div ref={scrollContainerRef} className="flex overflow-x-auto no-scrollbar scroll-smooth whitespace-nowrap flex-1 px-2">
-            {CONFIG_DATA.map((cat) => (
-              <button
-                key={cat.id}
-                onClick={() => handleTabClick(cat.id)}
-                className={`px-4 py-4 text-xs font-bold uppercase tracking-widest transition-all duration-200 relative shrink-0 ${activeTab === cat.id ? 'text-medium-carmine-700' : 'text-neutral-400 hover:text-neutral-600'}`}
-              >
-                {cat.id}
-                {activeTab === cat.id && <div className="absolute bottom-0 left-0 w-full h-0.5 bg-medium-carmine-600 rounded-t-full" />}
-              </button>
-            ))}
-          </div>
-          <button onClick={() => scrollTabs('right')} className="p-3 text-neutral-400 focus:outline-none active:text-neutral-900">
-             <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="w-5 h-5"><path strokeLinecap="round" strokeLinejoin="round" d="M8.25 4.5l7.5 7.5-7.5 7.5" /></svg>
-          </button>
-        </div>
-
         {/* Options Area */}
         <div className="flex-1 overflow-y-auto custom-scrollbar p-3 lg:p-8 space-y-4 lg:space-y-8">
           {activeTab === ConfigCategory.SUMMARY ? (
@@ -291,58 +247,43 @@ const Configurator: React.FC<ConfiguratorProps> = ({ config, setConfig, activeTa
           )}
         </div>
 
-        {/* Footer Summary */}
-        <div className="border-t border-neutral-100 bg-white/95 backdrop-blur-sm flex-none z-20">
-          {/* Mobile Footer */}
-          <div className="lg:hidden p-4 pb-8 flex items-center justify-between gap-4">
-            <button 
-              onClick={handlePreviousStep} 
-              disabled={currentStepIndex === 0} 
-              className={`p-4 rounded-full border border-neutral-200 transition-all active:scale-95 ${currentStepIndex === 0 ? 'opacity-30 border-transparent bg-neutral-50' : 'bg-white shadow-sm active:bg-neutral-50'}`}
-            >
-              <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor" className="w-5 h-5"><path strokeLinecap="round" strokeLinejoin="round" d="M15.75 19.5L8.25 12l7.5-7.5" /></svg>
-            </button>
-            <div className="flex flex-col items-center">
-              <span className="text-[10px] text-neutral-400 font-bold uppercase tracking-widest mb-0.5">Total Estimate</span>
-              <span className="text-xl font-medium text-neutral-900 tracking-tight tabular-nums">${calculateTotal().toLocaleString()}</span>
-            </div>
-            <button 
-              onClick={handleNextStep} 
-              className={`p-4 rounded-full transition-all shadow-lg active:scale-95 flex items-center justify-center ${isLastStep ? 'bg-medium-carmine-600 text-white shadow-medium-carmine-200' : 'bg-neutral-900 text-white shadow-neutral-200'}`}
-            >
-               {isLastStep ? <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4.5 12.75l6 6 9-13.5" /></svg> : <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8.25 4.5l7.5 7.5-7.5 7.5" /></svg>}
-            </button>
-          </div>
-
-          {/* Desktop Footer */}
-          <div className="hidden lg:block p-8">
-            <div className="flex justify-between items-end mb-6">
+        {/* Footer Summary - Unified for Desktop & Mobile */}
+        <div className="border-t border-neutral-100 bg-white/95 backdrop-blur-sm flex-none z-20 p-4 lg:p-8">
+            <div className="flex items-center justify-between gap-4">
               <div>
-                <p className="text-xs text-neutral-400 uppercase tracking-widest font-bold mb-2">Estimated Total</p>
-                <div className="text-4xl font-light text-neutral-900 tracking-tight tabular-nums">${calculateTotal().toLocaleString()}</div>
+                <p className="text-[10px] text-neutral-400 uppercase tracking-widest font-bold mb-1">Total Estimate</p>
+                <div className="text-2xl lg:text-3xl font-light text-neutral-900 tracking-tight tabular-nums">${calculateTotal().toLocaleString()}</div>
               </div>
-              <div className="text-right">
-                <p className="text-[10px] text-neutral-400 uppercase tracking-widest font-bold max-w-[200px] leading-relaxed">
-                   *Excludes taxes and destination fees
-                </p>
+              
+              <div className="flex gap-3">
+                <button 
+                  onClick={handlePreviousStep} 
+                  disabled={currentStepIndex === 0} 
+                  className={`
+                    px-4 py-3 lg:px-8 lg:py-4 
+                    border border-neutral-200 text-neutral-900 
+                    text-[10px] lg:text-xs font-bold uppercase tracking-[0.15em] 
+                    transition-all active:scale-[0.98] rounded-xl lg:rounded-none 
+                    ${currentStepIndex === 0 ? 'opacity-20 cursor-not-allowed hidden sm:block' : 'hover:bg-neutral-50 hover:border-neutral-300'}
+                  `}
+                >
+                  Back
+                </button>
+                <button 
+                  onClick={handleNextStep} 
+                  className="
+                    px-6 py-3 lg:px-10 lg:py-4 
+                    bg-medium-carmine-600 text-white 
+                    text-[10px] lg:text-xs font-bold uppercase tracking-[0.15em] 
+                    hover:bg-medium-carmine-700 transition-all 
+                    shadow-xl shadow-medium-carmine-200 active:scale-[0.98] 
+                    rounded-xl lg:rounded-none whitespace-nowrap
+                  "
+                >
+                  {isLastStep ? 'Request' : 'Next Step'}
+                </button>
               </div>
             </div>
-            <div className="flex gap-4">
-              <button 
-                onClick={handlePreviousStep} 
-                disabled={currentStepIndex === 0} 
-                className={`flex-1 py-4 border border-neutral-200 text-neutral-900 text-xs font-bold uppercase tracking-[0.15em] transition-all active:scale-[0.98] ${currentStepIndex === 0 ? 'opacity-20 cursor-not-allowed' : 'hover:bg-neutral-50 hover:border-neutral-300'}`}
-              >
-                Back
-              </button>
-              <button 
-                onClick={handleNextStep} 
-                className="flex-[2] py-4 bg-medium-carmine-600 text-white text-xs font-bold uppercase tracking-[0.15em] hover:bg-medium-carmine-700 transition-all shadow-xl shadow-medium-carmine-200 active:scale-[0.98]"
-              >
-                {isLastStep ? 'Request Quote' : 'Next Step'}
-              </button>
-            </div>
-          </div>
         </div>
       </div>
 

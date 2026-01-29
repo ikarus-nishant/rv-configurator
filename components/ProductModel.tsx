@@ -6,6 +6,22 @@ import { OrbitControls as OrbitControlsImpl } from 'three-stdlib';
 import { ProductConfig, ConfigCategory } from '../types';
 import { CONFIG_DATA } from '../constants';
 
+// Ensure all R3F elements used are defined in JSX.IntrinsicElements
+declare global {
+  namespace JSX {
+    interface IntrinsicElements {
+      group: any;
+      primitive: any;
+      mesh: any;
+      sphereGeometry: any;
+      meshBasicMaterial: any;
+      ambientLight: any;
+      spotLight: any;
+      'model-viewer': any;
+    }
+  }
+}
+
 interface ProductModelProps {
   config: ProductConfig;
   activeTab?: ConfigCategory;

@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import Scene from './components/Scene';
 import Configurator from './components/Configurator';
 import ARView from './components/ARView';
@@ -11,6 +11,7 @@ function App() {
   const [activeTab, setActiveTab] = useState<ConfigCategory>(ConfigCategory.SIZE);
   const [isARMode, setIsARMode] = useState(false);
   const [isSidebarOpen, setIsSidebarOpen] = useState(true);
+  const navContainerRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     const params = new URLSearchParams(window.location.search);
@@ -18,6 +19,16 @@ function App() {
       setIsARMode(true);
     }
   }, []);
+
+  // Auto-scroll the active tab into view when it changes
+  useEffect(() => {
+    if (navContainerRef.current) {
+        const activeElement = navContainerRef.current.querySelector('[data-active="true"]');
+        if (activeElement) {
+            activeElement.scrollIntoView({ behavior: 'smooth', block: 'nearest', inline: 'center' });
+        }
+    }
+  }, [activeTab]);
 
   const handleTabClick = (id: ConfigCategory) => {
     triggerHaptic(8);
@@ -29,11 +40,23 @@ function App() {
     setIsSidebarOpen(!isSidebarOpen);
   };
 
+  const currentStepIndex = CONFIG_DATA.findIndex(c => c.id === activeTab);
+  
+  const handleNextStep = () => {
+    if (currentStepIndex < CONFIG_DATA.length - 1) {
+        handleTabClick(CONFIG_DATA[currentStepIndex + 1].id);
+    }
+  };
+
+  const handlePrevStep = () => {
+    if (currentStepIndex > 0) {
+        handleTabClick(CONFIG_DATA[currentStepIndex - 1].id);
+    }
+  };
+
   if (isARMode) {
     return <ARView config={config} onExit={() => { triggerHaptic(); setIsARMode(false); }} />;
   }
-
-  const currentStepIndex = CONFIG_DATA.findIndex(c => c.id === activeTab);
 
   const stepLabels: Record<string, string> = {
     [ConfigCategory.SIZE]: 'Size',
@@ -45,53 +68,82 @@ function App() {
 
   return (
     <div className="flex flex-col h-[100dvh] w-screen overflow-hidden bg-neutral-100 font-sans">
-      <header className="flex-none h-16 lg:h-24 bg-[#111111] text-white flex items-center justify-center px-4 lg:px-8 z-30 shadow-2xl border-b border-white/5 relative">
-         <div className="absolute left-4 lg:left-10 flex items-center gap-3 top-1/2 -translate-y-1/2">
+      <header className="flex-none h-20 lg:h-24 bg-[#111111] text-white flex items-center justify-between px-2 lg:px-8 z-30 shadow-2xl border-b border-white/5 relative overflow-hidden">
+         
+         {/* Mobile Nav Prev Button */}
+         <button 
+           onClick={handlePrevStep}
+           disabled={currentStepIndex === 0}
+           className={`lg:hidden flex items-center justify-center w-12 h-full text-white transition-opacity ${currentStepIndex === 0 ? 'opacity-30 cursor-not-allowed' : 'opacity-100 active:scale-90'}`}
+         >
+           <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={2.5} stroke="currentColor" className="w-6 h-6">
+             <path strokeLinecap="round" strokeLinejoin="round" d="M15.75 19.5L8.25 12l7.5-7.5" />
+           </svg>
+         </button>
+
+         {/* Logo - Fixed Left (Desktop Only) */}
+         <div className="hidden lg:block flex-none z-10 lg:absolute lg:left-10 lg:top-1/2 lg:-translate-y-1/2">
              <img 
               src="https://www.dropbox.com/scl/fi/fsxbk5lsvs01mey2xu0np/Logo.webp?rlkey=dwhud57pj0waxfrmt4da7mj62&dl=1" 
               alt="Ikarus Delta Logo" 
-              className="h-6 lg:h-12 w-auto brightness-0 invert object-contain opacity-90 hover:opacity-100 transition-opacity"
+              className="h-12 w-auto brightness-0 invert object-contain opacity-90 hover:opacity-100 transition-opacity"
             />
          </div>
 
-         <div className="hidden lg:flex items-center gap-6 xl:gap-10">
+         {/* Navigation - Scrollable Area */}
+         <div className="flex-1 flex items-center justify-start lg:justify-center overflow-x-auto no-scrollbar mask-linear-fade h-full mx-2" ref={navContainerRef}>
+            <div className="flex items-center gap-6 lg:gap-10 px-4 min-w-max mx-auto h-full">
             {CONFIG_DATA.map((category, index) => {
                const isActive = activeTab === category.id;
                const isCompleted = index < currentStepIndex;
+               
                return (
-                  <div key={category.id} className="flex items-center group cursor-pointer" onClick={() => handleTabClick(category.id)}>
+                  <div 
+                    key={category.id} 
+                    data-active={isActive}
+                    className="flex items-center group cursor-pointer" 
+                    onClick={() => handleTabClick(category.id)}
+                  >
                      {index > 0 && (
-                       <div className={`w-8 xl:w-16 h-[1px] mx-2 xl:mx-4 transition-colors duration-500 ${isCompleted || isActive ? 'bg-neutral-600' : 'bg-neutral-800'}`} />
+                       <div className={`hidden sm:block w-4 lg:w-8 xl:w-16 h-[1px] mx-2 lg:mx-4 transition-colors duration-500 ${isCompleted || isActive ? 'bg-neutral-600' : 'bg-neutral-800'}`} />
                      )}
-                     <div className="flex items-center gap-3 xl:gap-4 relative">
+                     <div className="flex items-center gap-3 relative">
                        <div className={`
-                          flex items-center justify-center w-8 h-8 xl:w-9 xl:h-9 rounded-full text-[10px] xl:text-[11px] font-bold transition-all duration-500 border z-10
+                          flex items-center justify-center w-6 h-6 lg:w-9 lg:h-9 rounded-full text-[10px] lg:text-[11px] font-bold transition-all duration-500 border z-10 shrink-0
                           ${isActive ? 'bg-medium-carmine-600 border-medium-carmine-600 text-white shadow-[0_0_20px_rgba(186,59,50,0.5)] scale-110' : ''}
                           ${isCompleted ? 'bg-neutral-800 border-neutral-600 text-neutral-400' : ''}
                           ${!isActive && !isCompleted ? 'bg-transparent border-neutral-800 text-neutral-700' : ''}
                        `}>
                           {isCompleted ? (
-                            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" className="w-3.5 h-3.5 xl:w-4 xl:h-4">
+                            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" className="w-3 h-3 lg:w-4 lg:h-4">
                               <path fillRule="evenodd" d="M16.704 4.153a.75.75 0 01.143 1.052l-8 10.5a.75.75 0 01-1.127.075l-4.5-4.5a.75.75 0 011.06-1.06l3.894 3.893 7.48-9.817a.75.75 0 011.05-.143z" clipRule="evenodd" />
                             </svg>
                           ) : (
                             index + 1
                           )}
                        </div>
-                       <span className={`text-[10px] xl:text-xs font-bold uppercase tracking-[0.2em] transition-all duration-300 ${isActive ? 'text-white translate-y-0 opacity-100' : 'text-neutral-500 group-hover:text-neutral-400'}`}>
+                       {/* Labels always visible now */}
+                       <span className={`text-[10px] lg:text-xs font-bold uppercase tracking-[0.2em] transition-all duration-300 ${isActive ? 'text-white translate-y-0 opacity-100' : 'text-neutral-500 group-hover:text-neutral-400'}`}>
                           {stepLabels[category.id] || category.id}
                        </span>
                      </div>
                   </div>
                )
             })}
+            </div>
          </div>
 
-         <div className="lg:hidden flex items-center gap-2">
-            <span className="text-[10px] font-bold px-4 py-1.5 bg-neutral-800 rounded-full text-neutral-300 uppercase tracking-widest border border-neutral-700 shadow-inner">
-               Step {currentStepIndex + 1} / {CONFIG_DATA.length}
-            </span>
-         </div>
+         {/* Mobile Nav Next Button */}
+         <button 
+           onClick={handleNextStep}
+           disabled={currentStepIndex === CONFIG_DATA.length - 1}
+           className={`lg:hidden flex items-center justify-center w-12 h-full text-white transition-opacity ${currentStepIndex === CONFIG_DATA.length - 1 ? 'opacity-30 cursor-not-allowed' : 'opacity-100 active:scale-90'}`}
+         >
+           <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={2.5} stroke="currentColor" className="w-6 h-6">
+             <path strokeLinecap="round" strokeLinejoin="round" d="M8.25 4.5l7.5 7.5-7.5 7.5" />
+           </svg>
+         </button>
+
       </header>
 
       <div className="flex-1 flex flex-col lg:flex-row relative overflow-hidden w-full">
