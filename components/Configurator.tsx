@@ -180,9 +180,9 @@ const Configurator: React.FC<ConfiguratorProps> = ({ config, setConfig, activeTa
         </div>
 
         {/* Options Area */}
-        <div className="flex-1 overflow-y-auto custom-scrollbar p-5 lg:p-8 space-y-8">
+        <div className="flex-1 overflow-y-auto custom-scrollbar p-3 lg:p-8 space-y-4 lg:space-y-8">
           {activeTab === ConfigCategory.SUMMARY ? (
-            <div className="space-y-8 animate-[fadeIn_0.3s_ease-out]">
+            <div className="space-y-8 animate-[fadeIn_0.3s_ease-out] p-2 lg:p-0">
               <div>
                 <h3 className="text-xs text-neutral-400 uppercase tracking-[0.2em] font-bold mb-6 pb-2 border-b border-neutral-100">Build Specification</h3>
                 <div className="space-y-1">
@@ -228,11 +228,11 @@ const Configurator: React.FC<ConfiguratorProps> = ({ config, setConfig, activeTa
             </div>
           ) : (
             activeCategoryData?.sections.map((section, index) => (
-              <div key={index} className="space-y-4 animate-[slideIn_0.3s_ease-out]">
+              <div key={index} className="space-y-3 lg:space-y-4 animate-[slideIn_0.3s_ease-out]">
                  {section.title && (
                    <h3 className="text-xs font-bold uppercase tracking-[0.15em] text-neutral-400 ml-1">{section.title}</h3>
                  )}
-                 <div className="grid grid-cols-1 gap-4">
+                 <div className="grid grid-cols-1 gap-3 lg:gap-4">
                   {section.options.map((option) => {
                     if (option.availableForSize && !option.availableForSize.includes(config.size)) return null;
                     const configValue = config[section.stateKey];
@@ -244,7 +244,7 @@ const Configurator: React.FC<ConfiguratorProps> = ({ config, setConfig, activeTa
                         key={option.id}
                         onClick={() => handleOptionSelect(section.stateKey, option.id, section.multiSelect)}
                         className={`
-                          group relative flex items-start p-4 lg:p-5 text-left transition-all duration-200 w-full rounded-2xl
+                          group relative flex items-start p-3 lg:p-5 text-left transition-all duration-200 w-full rounded-2xl
                           border active:scale-[0.98] outline-none
                           ${isSelected 
                             ? 'border-medium-carmine-600 bg-white ring-1 ring-medium-carmine-600 shadow-lg shadow-medium-carmine-100/50' 
@@ -252,31 +252,31 @@ const Configurator: React.FC<ConfiguratorProps> = ({ config, setConfig, activeTa
                           }
                         `}
                       >
-                        <div className="w-24 h-24 lg:w-32 lg:h-24 rounded-xl overflow-hidden border border-neutral-100 flex-shrink-0 mr-5 bg-neutral-50 relative">
+                        <div className="w-16 h-16 lg:w-32 lg:h-24 rounded-xl overflow-hidden border border-neutral-100 flex-shrink-0 mr-3 lg:mr-5 bg-neutral-50 relative">
                             <img src={iconToDisplay} alt={option.label} className="w-full h-full object-contain p-2 mix-blend-multiply opacity-90 group-hover:opacity-100 transition-opacity" />
                         </div>
-                        <div className="flex-1 min-w-0 py-1 flex flex-col justify-between h-full">
+                        <div className="flex-1 min-w-0 py-0.5 flex flex-col justify-between h-full">
                           <div>
                             <div className="flex justify-between items-start gap-2">
-                              <span className={`text-sm lg:text-base font-bold uppercase tracking-wider leading-tight ${isSelected ? 'text-medium-carmine-700' : 'text-neutral-900'}`}>
+                              <span className={`text-xs lg:text-base font-bold uppercase tracking-wider leading-tight ${isSelected ? 'text-medium-carmine-700' : 'text-neutral-900'}`}>
                                 {option.label}
                               </span>
                               {isSelected && (
-                                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" className="w-5 h-5 text-medium-carmine-600 shrink-0">
+                                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" className="w-4 h-4 lg:w-5 lg:h-5 text-medium-carmine-600 shrink-0">
                                   <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.857-9.809a.75.75 0 00-1.214-.882l-3.483 4.79-1.88-1.88a.75.75 0 10-1.06 1.061l2.5 2.5a.75.75 0 001.137-.089l4-5.5z" clipRule="evenodd" />
                                 </svg>
                               )}
                             </div>
                             {option.description && (
-                              <p className="text-xs text-neutral-500 mt-2 leading-relaxed pr-2 font-medium">
+                              <p className="text-[10px] lg:text-xs text-neutral-500 mt-1.5 lg:mt-2 leading-relaxed pr-2 font-medium line-clamp-2">
                                 {option.description}
                               </p>
                             )}
                           </div>
                           
                           {option.price !== undefined && (
-                            <div className="mt-3 text-right">
-                                <span className={`text-xs font-bold uppercase tracking-wide px-2 py-1 rounded-md ${isSelected ? 'bg-medium-carmine-50 text-medium-carmine-700' : 'bg-neutral-100 text-neutral-600'}`}>
+                            <div className="mt-2 lg:mt-3 text-right">
+                                <span className={`text-[10px] lg:text-xs font-bold uppercase tracking-wide px-2 py-1 rounded-md ${isSelected ? 'bg-medium-carmine-50 text-medium-carmine-700' : 'bg-neutral-100 text-neutral-600'}`}>
                                     {option.price === 0 ? 'Included' : `+$${option.price.toLocaleString()}`}
                                 </span>
                             </div>
