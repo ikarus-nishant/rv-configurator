@@ -247,11 +247,11 @@ const Configurator: React.FC<ConfiguratorProps> = ({ config, setConfig, activeTa
         </div>
 
         {/* Footer Summary - Matches Image Design */}
-        <div className="absolute bottom-0 left-0 w-full bg-white border-t border-neutral-200 p-6 lg:px-8 lg:py-6 z-20 shadow-[0_-4px_20px_rgba(0,0,0,0.05)]">
-            <div className="flex items-end justify-between gap-4">
-              <div className="flex flex-col">
-                <p className="text-[10px] text-neutral-400 uppercase tracking-widest font-bold mb-1">Estimated Price</p>
-                <div className="text-3xl font-medium text-neutral-900 tracking-tight leading-none">
+        <div className="absolute bottom-0 left-0 w-full bg-white border-t border-neutral-200 p-4 lg:px-8 lg:py-6 z-20 shadow-[0_-4px_20px_rgba(0,0,0,0.05)]">
+            <div className="flex items-center lg:items-end justify-between gap-4">
+              <div className="flex flex-col shrink min-w-0">
+                <p className="text-[9px] lg:text-[10px] text-neutral-400 uppercase tracking-widest font-bold mb-1">Estimated Price</p>
+                <div className="text-2xl lg:text-3xl font-medium text-neutral-900 tracking-tight leading-none truncate">
                     ${calculateTotal().toLocaleString('en-US', {minimumFractionDigits: 2})}
                 </div>
               </div>
@@ -260,10 +260,10 @@ const Configurator: React.FC<ConfiguratorProps> = ({ config, setConfig, activeTa
                   onClick={handleNextStep} 
                   className="
                     bg-medium-carmine-700 hover:bg-medium-carmine-800 text-white 
-                    text-xs font-bold uppercase tracking-[0.15em] 
-                    py-4 px-6 lg:px-10
+                    text-[10px] lg:text-xs font-bold uppercase tracking-[0.15em] 
+                    py-3 px-5 lg:py-4 lg:px-10
                     transition-all shadow-lg shadow-medium-carmine-900/10 active:scale-[0.98] 
-                    whitespace-nowrap
+                    whitespace-nowrap shrink-0
                   "
                 >
                   {getNextLabel()}
