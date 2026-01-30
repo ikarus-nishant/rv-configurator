@@ -107,7 +107,7 @@ export const CONFIG_DATA: CategoryData[] = [
             label: 'Classic Aluminum', 
             price: 0,
             colorCode: '#E0E0E0',
-            icon: 'https://www.dropbox.com/scl/fi/efzaughr2p219kw9sv13e/Classic-Aluminium.webp?rlkey=2j6l24rvfv7igo4jr6gxguxod&dl=1',
+            icon: 'https://gxgxlnorfuqagpfcbrsm.supabase.co/storage/v1/object/public/demo-assets/shell-finishes/Classic%20Aluminium.webp',
             description: 'A professional, bright silver finish with a distinct horizontal brushed metal texture.',
             modelUrl: 'https://gxgxlnorfuqagpfcbrsm.supabase.co/storage/v1/object/public/demo-assets/3d-assets/ext-alu.glb'
           },
@@ -116,6 +116,7 @@ export const CONFIG_DATA: CategoryData[] = [
             label: 'Sunset Red', 
             price: 3500,
             colorCode: '#8B0000',
+            icon: 'https://gxgxlnorfuqagpfcbrsm.supabase.co/storage/v1/object/public/demo-assets/shell-finishes/sunset%20red.webp',
             description: 'A bold, adventurous deep red matte finish.',
             modelUrl: 'https://gxgxlnorfuqagpfcbrsm.supabase.co/storage/v1/object/public/demo-assets/3d-assets/ext-red.glb'
           },
@@ -124,6 +125,7 @@ export const CONFIG_DATA: CategoryData[] = [
             label: 'Coastal Teal', 
             price: 2000,
             colorCode: '#008080',
+            icon: 'https://gxgxlnorfuqagpfcbrsm.supabase.co/storage/v1/object/public/demo-assets/shell-finishes/teal.webp',
             description: 'A calming, sea-inspired satin teal finish.',
             modelUrl: 'https://gxgxlnorfuqagpfcbrsm.supabase.co/storage/v1/object/public/demo-assets/3d-assets/ext-teal.glb'
           },
