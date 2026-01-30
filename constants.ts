@@ -136,9 +136,30 @@ export const CONFIG_DATA: CategoryData[] = [
         stateKey: 'interior',
         multiSelect: false,
         options: [
-          { id: 'coastal', label: 'Coastal Cove', price: 0, description: 'Light oaks, sea-mist fabrics, airy feel.' },
-          { id: 'urban', label: 'Urban Loft', price: 1500, description: 'High-gloss cabinetry, dark accents, modern tech.' },
-          { id: 'lodge', label: 'Mountain Lodge', price: 2500, description: 'Warm walnut, leather seating, cozy textiles.' },
+          { 
+            id: 'pebble', 
+            label: 'Pebble Grey', 
+            price: 0, 
+            description: 'Soft, neutral grey fabrics for a modern, airy feel.',
+            icon: 'https://dl.dropbox.com/scl/fi/1z3bw5cjqrz2bi7318rf9/Pebble.jpg?rlkey=hgtgual1ajksajhwnvrv8uogt&dl=1',
+            modelUrl: 'https://dl.dropbox.com/scl/fi/0gmudfs0k6jas3e30wdaz/uph-pebble.glb?rlkey=ue0goy58gjl0w2sh3g2itbhfh&dl=1'
+          },
+          { 
+            id: 'ivory', 
+            label: 'Ivory Cream', 
+            price: 1500, 
+            description: 'Luxurious cream textiles for a bright, elegant interior.',
+            icon: 'https://dl.dropbox.com/scl/fi/01z3oxfgge4i3tk6jqd5r/Ivory.jpg?rlkey=vnqgh6r6odcju4255r3v7mbsa&dl=1',
+            modelUrl: 'https://dl.dropbox.com/scl/fi/ez2y89quhjpo5evj8luht/uph-ivory.glb?rlkey=y0zydti6zgcpftqryw7pe2dmm&dl=1'
+          },
+          { 
+            id: 'blossom', 
+            label: 'Cherry Blossom', 
+            price: 2500, 
+            description: 'Warm, inviting pink tones for a unique, cozy atmosphere.',
+            icon: 'https://dl.dropbox.com/scl/fi/cnis9s2cbpk1zut2rosvq/Blossom.png?rlkey=i85mim45edeyzi8hkquc8puq3&dl=1',
+            modelUrl: 'https://dl.dropbox.com/scl/fi/bc6zg73z39r24vrir3ju2/uph-blossom.glb?rlkey=zash8mbejya09i6np8647ci18&dl=1'
+          },
         ]
       },
       {
@@ -151,24 +172,24 @@ export const CONFIG_DATA: CategoryData[] = [
             label: 'Natural Oak', 
             price: 0, 
             description: 'Light, organic wood finish.',
-            icon: 'https://www.dropbox.com/scl/fi/cvfjbnc1aseiyax7wfp4h/Oak.jpg?rlkey=xxsgslx6fphukwwt4tt9bropb&dl=1',
-            texture: 'https://www.dropbox.com/scl/fi/cvfjbnc1aseiyax7wfp4h/Oak.jpg?rlkey=xxsgslx6fphukwwt4tt9bropb&dl=1'
+            icon: 'https://dl.dropbox.com/scl/fi/cvfjbnc1aseiyax7wfp4h/Oak.jpg?rlkey=xxsgslx6fphukwwt4tt9bropb&dl=1',
+            modelUrl: 'https://dl.dropbox.com/scl/fi/12xpge7rvarwykcdvujvn/int-wood-oak.glb?rlkey=j0i7ek23boootva7ep3oewdqc&dl=1'
           },
           { 
             id: 'walnut', 
             label: 'Deep Walnut', 
             price: 800, 
             description: 'Rich, dark wood grain.',
-            icon: 'https://www.dropbox.com/scl/fi/8gipxmldaw1hapg1mq7vk/Walnut.jpg?rlkey=ca6d0gp3lskydr4delhq0cb4t&dl=1',
-            texture: 'https://www.dropbox.com/scl/fi/8gipxmldaw1hapg1mq7vk/Walnut.jpg?rlkey=ca6d0gp3lskydr4delhq0cb4t&dl=1'
+            icon: 'https://dl.dropbox.com/scl/fi/8gipxmldaw1hapg1mq7vk/Walnut.jpg?rlkey=ca6d0gp3lskydr4delhq0cb4t&dl=1',
+            modelUrl: 'https://dl.dropbox.com/scl/fi/qv2ftzf2qr63dn7e8gkco/int-wood-walnut.glb?rlkey=z7aayr5fgoy4xhuez5zzm2qpu&dl=1'
           },
           { 
             id: 'modern_gray', 
             label: 'Modern Gray', 
             price: 500, 
             description: 'Sleek, painted minimalist finish.',
-            icon: 'https://www.dropbox.com/scl/fi/op9i56x61tz6vtf2uoooq/Modern-Grey.jpg?rlkey=dz0pc51x1i19itam3oq9812k5&dl=1',
-            texture: 'https://www.dropbox.com/scl/fi/op9i56x61tz6vtf2uoooq/Modern-Grey.jpg?rlkey=dz0pc51x1i19itam3oq9812k5&dl=1'
+            icon: 'https://dl.dropbox.com/scl/fi/op9i56x61tz6vtf2uoooq/Modern-Grey.jpg?rlkey=dz0pc51x1i19itam3oq9812k5&dl=1',
+            modelUrl: 'https://dl.dropbox.com/scl/fi/7dlfl1ezuoqofjl5czoqj/int-wood-grey.glb?rlkey=c1amt3s2wpbgux6gbqvlofrry&dl=1'
           },
         ]
       }
@@ -184,7 +205,7 @@ export const INITIAL_CONFIG: any = {
   size: '27',
   floorplan: '27fb',
   exterior: [],
-  interior: ['coastal'],
+  interior: ['pebble'],
   cabinets: 'natural_oak',
   material: 'aluminum',
 };

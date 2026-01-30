@@ -24,7 +24,7 @@ export interface ConfigOption {
   description?: string;
   colorCode?: string; // For materials
   icon?: string; // URL for option image
-  texture?: string; // URL for 3D model texture
+  modelUrl?: string; // URL for specific 3D model part (e.g. cabinets)
   availableForSize?: string[]; // Dependencies: only show this option if config.size matches one of these
 }
 

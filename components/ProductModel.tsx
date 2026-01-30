@@ -1,7 +1,7 @@
-import React, { useEffect, useRef, useState, Suspense, useMemo } from 'react';
-import { useGLTF, Html, OrthographicCamera, useTexture } from '@react-three/drei';
+import React, { useEffect, useRef, useState, Suspense } from 'react';
+import { useGLTF, Html, OrthographicCamera } from '@react-three/drei';
 import { useThree, useFrame } from '@react-three/fiber';
-import { Mesh, Vector3, Object3D, PerspectiveCamera, Quaternion, Group, SRGBColorSpace } from 'three';
+import { Mesh, Vector3, Object3D, PerspectiveCamera, Quaternion } from 'three';
 import { OrbitControls as OrbitControlsImpl } from 'three-stdlib';
 import { ProductConfig, ConfigCategory } from '../types';
 import { CONFIG_DATA } from '../constants';
@@ -15,6 +15,8 @@ declare module 'react' {
       mesh: any;
       sphereGeometry: any;
       meshBasicMaterial: any;
+      meshStandardMaterial: any;
+      boxGeometry: any;
     }
   }
 }
@@ -27,6 +29,8 @@ declare global {
       mesh: any;
       sphereGeometry: any;
       meshBasicMaterial: any;
+      meshStandardMaterial: any;
+      boxGeometry: any;
     }
   }
 }
@@ -58,17 +62,18 @@ const ExteriorModel: React.FC<{ config: ProductConfig }> = ({ config }) => {
     const exteriorIds = exteriorSection?.options.map(o => o.id) || [];
 
     scene.traverse((child) => {
+      // Check for add-ons visibility on all objects (Groups, Meshes, etc.)
+      const associatedOptionId = exteriorIds.find(id => 
+        child.name.toLowerCase().includes(id.toLowerCase())
+      );
+
+      if (associatedOptionId) {
+        child.visible = config.exterior.includes(associatedOptionId);
+      }
+
       if (child instanceof Mesh) {
         child.castShadow = true;
         child.receiveShadow = true;
-
-        const associatedOptionId = exteriorIds.find(id => 
-          child.name.toLowerCase().includes(id.toLowerCase())
-        );
-
-        if (associatedOptionId) {
-          child.visible = config.exterior.includes(associatedOptionId);
-        }
 
         if (child.material && (child.material as any).name === 'Steel') {
           (child.material as any).color.set(targetColor);
@@ -148,6 +153,12 @@ const Hotspot: React.FC<HotspotProps> = ({ position, isActive, onClick }) => {
   );
 };
 
+// Generic component to load variable parts (cabinets, upholstery)
+const DynamicPartModel: React.FC<{ url: string }> = ({ url }) => {
+  const { scene } = useGLTF(url);
+  return <primitive object={scene} />;
+}
+
 interface InteriorModelProps {
   activeWaypoint: string;
   onTargetFound: (target: Object3D) => void;
@@ -156,36 +167,30 @@ interface InteriorModelProps {
 }
 
 const InteriorModel: React.FC<InteriorModelProps> = ({ activeWaypoint, onTargetFound, onUserClick, config }) => {
-  const { scene } = useGLTF(INTERIOR_URL);
+  // Load the base interior (always present)
+  const { scene: baseScene } = useGLTF(INTERIOR_URL);
   const [waypoints, setWaypoints] = useState<{name: string, position: Vector3}[]>([]);
 
-  // Find the selected texture URL
+  // 1. Resolve Cabinets URL
   const cabinetOption = CONFIG_DATA.find(c => c.id === ConfigCategory.INTERIOR)
     ?.sections.find(s => s.stateKey === 'cabinets')
     ?.options.find(o => o.id === config.cabinets);
-    
-  // Default to a safe fallback if somehow undefined, though config should be valid
-  const textureUrl = cabinetOption?.texture || cabinetOption?.icon || 'https://www.dropbox.com/scl/fi/cvfjbnc1aseiyax7wfp4h/Oak.jpg?rlkey=xxsgslx6fphukwwt4tt9bropb&dl=1';
+  const cabinetModelUrl = cabinetOption?.modelUrl || 'https://dl.dropbox.com/scl/fi/12xpge7rvarwykcdvujvn/int-wood-oak.glb?rlkey=j0i7ek23boootva7ep3oewdqc&dl=1';
 
-  const texture = useTexture(textureUrl);
-  texture.flipY = false;
-  texture.colorSpace = SRGBColorSpace;
+  // 2. Resolve Upholstery URL
+  const interiorSection = CONFIG_DATA.find(c => c.id === ConfigCategory.INTERIOR)
+    ?.sections.find(s => s.stateKey === 'interior');
+  // config.interior is string[], but for upholstery we only select one ID.
+  const selectedInteriorId = config.interior[0]; 
+  const upholsteryOption = interiorSection?.options.find(o => o.id === selectedInteriorId);
+  const upholsteryModelUrl = upholsteryOption?.modelUrl || 'https://dl.dropbox.com/scl/fi/0gmudfs0k6jas3e30wdaz/uph-pebble.glb?rlkey=ue0goy58gjl0w2sh3g2itbhfh&dl=1';
 
-  useEffect(() => {
-    // Apply texture to WoodLaminate.001
-    scene.traverse((child) => {
-      if (child instanceof Mesh && child.material && child.material.name === 'WoodLaminate.001') {
-        child.material.map = texture;
-        child.material.needsUpdate = true;
-      }
-    });
-  }, [scene, texture]);
-
+  // Process Waypoints on the Base Scene
   useEffect(() => {
     const foundWaypoints: {name: string, position: Vector3}[] = [];
-    scene.updateMatrixWorld(true);
+    baseScene.updateMatrixWorld(true);
 
-    scene.traverse((child) => {
+    baseScene.traverse((child) => {
       if (child.name.includes('Plane')) {
         child.visible = false;
       }
@@ -197,18 +202,29 @@ const InteriorModel: React.FC<InteriorModelProps> = ({ activeWaypoint, onTargetF
     });
     foundWaypoints.sort((a, b) => a.name.localeCompare(b.name));
     setWaypoints(foundWaypoints);
-  }, [scene]);
+  }, [baseScene]);
 
   useEffect(() => {
-    const target = scene.getObjectByName(activeWaypoint);
+    const target = baseScene.getObjectByName(activeWaypoint);
     if (target) {
       onTargetFound(target);
     }
-  }, [scene, activeWaypoint, onTargetFound]);
+  }, [baseScene, activeWaypoint, onTargetFound]);
 
   return (
     <group>
-      <primitive object={scene} />
+      <primitive object={baseScene} />
+      
+      {/* Load Cabinets */}
+      <Suspense fallback={null}>
+         <DynamicPartModel url={cabinetModelUrl} />
+      </Suspense>
+
+      {/* Load Upholstery */}
+      <Suspense fallback={null}>
+         <DynamicPartModel url={upholsteryModelUrl} />
+      </Suspense>
+
       {waypoints.map((wp) => (
         <Hotspot 
           key={wp.name}
@@ -421,5 +437,18 @@ const ProductModel: React.FC<ProductModelProps> = ({ config, activeTab, resetTri
 useGLTF.preload(EXTERIOR_URL);
 useGLTF.preload(FLOORPLAN_URL);
 useGLTF.preload(INTERIOR_URL);
+
+// Preload Modular Variants (Cabinets & Upholstery)
+CONFIG_DATA.forEach(category => {
+  if (category.id === ConfigCategory.INTERIOR) {
+    category.sections.forEach(section => {
+      section.options.forEach(option => {
+        if (option.modelUrl) {
+          useGLTF.preload(option.modelUrl);
+        }
+      });
+    });
+  }
+});
 
 export default ProductModel;
