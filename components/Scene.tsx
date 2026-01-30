@@ -6,27 +6,6 @@ import ProductModel from './ProductModel';
 import { ProductConfig, ConfigCategory } from '../types';
 import { triggerHaptic } from '../utils/haptics';
 
-// Augment React's JSX namespace for R3F elements
-declare module 'react' {
-  namespace JSX {
-    interface IntrinsicElements {
-      group: any;
-      ambientLight: any;
-      spotLight: any;
-    }
-  }
-}
-
-declare global {
-  namespace JSX {
-    interface IntrinsicElements {
-      group: any;
-      ambientLight: any;
-      spotLight: any;
-    }
-  }
-}
-
 // Initialize XR Store
 const store = createXRStore();
 
@@ -58,6 +37,16 @@ const Loader = ({ forcedActive = false }: { forcedActive?: boolean }) => {
     </div>
   );
 };
+
+declare global {
+  namespace JSX {
+    interface IntrinsicElements {
+      group: any;
+      ambientLight: any;
+      spotLight: any;
+    }
+  }
+}
 
 interface SceneProps {
   config: ProductConfig;

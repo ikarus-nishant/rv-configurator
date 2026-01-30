@@ -131,31 +131,53 @@ const Configurator: React.FC<ConfiguratorProps> = ({ config, setConfig, activeTa
                 <h3 className="text-[14px] font-bold font-overpass text-medium-carmine-700 uppercase tracking-widest border-b border-neutral-100 pb-2 mb-4">
                     Summary
                 </h3>
-                {/* Summary Re-styled */}
-                <div className="space-y-4">
-                    {/* Size */}
-                    <div className="flex justify-between items-center py-4 border-b border-neutral-50">
-                        <div>
-                            {/* Body/Description: Heebo Regular 10px */}
-                            <div className="text-[10px] font-normal font-heebo text-neutral-400 uppercase tracking-widest mb-1">Model Size</div>
-                            {/* Option/Value: Heebo Regular 14px */}
-                            <div className="text-[14px] font-normal font-heebo text-neutral-900">{config.size}' Floorplan</div>
-                        </div>
-                    </div>
-                     {/* Floorplan */}
-                     <div className="flex justify-between items-center py-4 border-b border-neutral-50">
-                        <div>
-                            <div className="text-[10px] font-normal font-heebo text-neutral-400 uppercase tracking-widest mb-1">Layout</div>
-                            <div className="text-[14px] font-normal font-heebo text-neutral-900">{config.floorplan.toUpperCase()}</div>
-                        </div>
-                    </div>
-                     {/* Material */}
-                     <div className="flex justify-between items-center py-4 border-b border-neutral-50">
-                        <div>
-                            <div className="text-[10px] font-normal font-heebo text-neutral-400 uppercase tracking-widest mb-1">Exterior Finish</div>
-                            <div className="text-[14px] font-normal font-heebo text-neutral-900 capitalize">{config.material.replace('_', ' ')}</div>
-                        </div>
-                    </div>
+                {/* Dynamic Summary List */}
+                <div className="space-y-6">
+                  {CONFIG_DATA.map(category => {
+                     if (category.id === ConfigCategory.SUMMARY) return null;
+                     
+                     return category.sections.map(section => {
+                        const configValue = config[section.stateKey];
+                        // Find selected options
+                        const selected = section.options.filter(opt => {
+                           if (Array.isArray(configValue)) return configValue.includes(opt.id);
+                           return configValue === opt.id;
+                        });
+
+                        if (selected.length === 0) return null;
+
+                        return (
+                           <div key={section.stateKey} className="pb-4 border-b border-neutral-50 last:border-0 last:pb-0">
+                              <h4 className="text-[10px] font-normal font-heebo text-neutral-400 uppercase tracking-widest mb-3">
+                                 {section.title}
+                              </h4>
+                              <div className="space-y-3">
+                                 {selected.map(opt => (
+                                    <div key={opt.id} className="flex items-center gap-4">
+                                       <div className="w-16 h-16 bg-neutral-100 border border-neutral-200 flex-shrink-0 overflow-hidden relative">
+                                          {opt.icon ? (
+                                             <img src={opt.icon} alt={opt.label} className="w-full h-full object-cover mix-blend-multiply" />
+                                          ) : opt.colorCode ? (
+                                             <div className="w-full h-full" style={{ backgroundColor: opt.colorCode }} />
+                                          ) : (
+                                             <div className="w-full h-full bg-neutral-200 flex items-center justify-center text-neutral-300">
+                                                <svg width="24" height="24" viewBox="0 0 24 24" fill="currentColor"><rect width="24" height="24"/></svg>
+                                             </div>
+                                          )}
+                                       </div>
+                                       <div>
+                                          <div className="text-[14px] font-normal font-heebo text-neutral-900">{opt.label}</div>
+                                          <div className="text-[12px] text-neutral-500">
+                                             {opt.price ? `$${opt.price.toLocaleString()}` : 'Included'}
+                                          </div>
+                                       </div>
+                                    </div>
+                                 ))}
+                              </div>
+                           </div>
+                        );
+                     });
+                  })}
                 </div>
             </div>
           ) : (
@@ -265,7 +287,7 @@ const Configurator: React.FC<ConfiguratorProps> = ({ config, setConfig, activeTa
                 {/* Body/Description style */}
                 <p className="text-[10px] font-normal font-heebo text-neutral-400 uppercase tracking-widest mb-1">Estimated Price</p>
                 {/* Price display - kept large for emphasis, but using Heebo */}
-                <div className="text-2xl lg:text-3xl font-normal font-heebo text-neutral-900 tracking-tight leading-none truncate">
+                <div className="text-2xl lg:text-3xl font-normal font-heebo text-neutral-900 tracking-tight leading-none">
                     ${calculateTotal().toLocaleString('en-US', {minimumFractionDigits: 2})}
                 </div>
               </div>
@@ -281,7 +303,8 @@ const Configurator: React.FC<ConfiguratorProps> = ({ config, setConfig, activeTa
                     whitespace-nowrap shrink-0
                   "
                 >
-                  {getNextLabel()}
+                  <span className="lg:hidden">{isLastStep ? 'Request Quote' : 'Continue'}</span>
+                  <span className="hidden lg:inline">{getNextLabel()}</span>
                 </button>
             </div>
         </div>

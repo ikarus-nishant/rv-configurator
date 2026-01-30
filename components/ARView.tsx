@@ -3,15 +3,7 @@ import { CONFIG_DATA } from '../constants';
 import { ConfigCategory, ProductConfig } from '../types';
 import { triggerHaptic } from '../utils/haptics';
 
-// Augment React's JSX namespace to support model-viewer
-declare module 'react' {
-  namespace JSX {
-    interface IntrinsicElements {
-      'model-viewer': any;
-    }
-  }
-}
-
+// Augment the global JSX namespace to include custom elements
 declare global {
   namespace JSX {
     interface IntrinsicElements {

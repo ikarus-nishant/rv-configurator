@@ -1,4 +1,3 @@
-
 import { ConfigCategory, CategoryData } from './types';
 
 export const CONFIG_DATA: CategoryData[] = [
@@ -15,21 +14,21 @@ export const CONFIG_DATA: CategoryData[] = [
             label: "23' Floorplan", 
             price: 89000, 
             description: 'Compact versatility for weekend warriors.',
-            icon: 'https://www.dropbox.com/scl/fi/g80ebo1a2g1faftj4i8oe/23ext.webp?rlkey=hfl0bk3zam1o2o5hmmvywaly2&dl=1'
+            icon: 'https://gxgxlnorfuqagpfcbrsm.supabase.co/storage/v1/object/public/demo-assets/icons/23ext.webp'
           },
           { 
             id: '25', 
             label: "25' Floorplan", 
             price: 98000, 
             description: 'The perfect balance of space and towability.',
-            icon: 'https://www.dropbox.com/scl/fi/8xqrtaa4kaoypckyn5pol/27ext.png?rlkey=wlp1o0qz09mklh6i6hmtukh66&dl=1'
+            icon: 'https://gxgxlnorfuqagpfcbrsm.supabase.co/storage/v1/object/public/demo-assets/icons/27ext.png'
           },
           { 
             id: '27', 
             label: "27' Floorplan", 
             price: 109000, 
             description: 'Extended living space for long-haul adventures.',
-            icon: 'https://www.dropbox.com/scl/fi/1ao0ei7erhm1iyj4j97b5/28ext.png?rlkey=t4lo8fie8t9vmp4dt1nngvy5h&dl=1'
+            icon: 'https://gxgxlnorfuqagpfcbrsm.supabase.co/storage/v1/object/public/demo-assets/icons/28ext.png'
           },
         ]
       }
@@ -45,7 +44,7 @@ export const CONFIG_DATA: CategoryData[] = [
         options: [
           { 
             id: '23fb', 
-            label: 'Front Bed Queen', 
+            label: '7749', 
             price: 0, 
             description: 'Master suite in front, dining in rear.', 
             availableForSize: ['23'],
@@ -53,7 +52,7 @@ export const CONFIG_DATA: CategoryData[] = [
           },
           { 
             id: '23cb', 
-            label: 'Corner Bunk', 
+            label: '8864', 
             price: 1500, 
             description: 'Rear corner bed with overhead bunk.', 
             availableForSize: ['23'],
@@ -61,7 +60,7 @@ export const CONFIG_DATA: CategoryData[] = [
           },
           { 
             id: '25fb', 
-            label: 'Front Bed Queen', 
+            label: '7749', 
             price: 0, 
             description: 'Spacious front bedroom with panoramic view.', 
             availableForSize: ['25'],
@@ -69,7 +68,7 @@ export const CONFIG_DATA: CategoryData[] = [
           },
           { 
             id: '25rb', 
-            label: 'Rear Bed Queen', 
+            label: '8864', 
             price: 0, 
             description: 'Bedroom tucked in the back for privacy.', 
             availableForSize: ['25'],
@@ -77,7 +76,7 @@ export const CONFIG_DATA: CategoryData[] = [
           },
           { 
             id: '27fb', 
-            label: 'Front Bed Queen', 
+            label: '7749', 
             price: 0, 
             description: 'Maximum master suite luxury.', 
             availableForSize: ['27'],
@@ -85,7 +84,7 @@ export const CONFIG_DATA: CategoryData[] = [
           },
           { 
             id: '27rb', 
-            label: 'Rear Bed Queen', 
+            label: '8864', 
             price: 0, 
             description: 'Secluded rear bedroom retreat.', 
             availableForSize: ['27'],

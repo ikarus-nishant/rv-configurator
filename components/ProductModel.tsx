@@ -6,21 +6,6 @@ import { OrbitControls as OrbitControlsImpl } from 'three-stdlib';
 import { ProductConfig, ConfigCategory } from '../types';
 import { CONFIG_DATA } from '../constants';
 
-// Augment React's JSX namespace for R3F elements
-declare module 'react' {
-  namespace JSX {
-    interface IntrinsicElements {
-      primitive: any;
-      group: any;
-      mesh: any;
-      sphereGeometry: any;
-      meshBasicMaterial: any;
-      meshStandardMaterial: any;
-      boxGeometry: any;
-    }
-  }
-}
-
 declare global {
   namespace JSX {
     interface IntrinsicElements {
@@ -416,7 +401,7 @@ const ProductModel: React.FC<ProductModelProps> = ({ config, activeTab, resetTri
             <OrthographicCamera 
                 makeDefault 
                 position={[0, 50, 0]} 
-                zoom={60} 
+                zoom={130} 
                 near={0.1} 
                 far={1000}
                 onUpdate={c => c.lookAt(0, 0, 0)}
