@@ -2,16 +2,6 @@ import React, { useRef } from 'react';
 import { ProductConfig } from '../types';
 import { triggerHaptic } from '../utils/haptics';
 
-// Augment the global JSX namespace to include custom elements
-declare global {
-  namespace JSX {
-    interface IntrinsicElements {
-      'model-viewer': any;
-      [elemName: string]: any;
-    }
-  }
-}
-
 interface ARViewProps {
   config?: ProductConfig;
   onExit?: () => void;

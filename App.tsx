@@ -81,15 +81,6 @@ function App() {
            </svg>
          </button>
 
-         {/* Logo - Fixed Left (Desktop Only) */}
-         <div className="hidden lg:block flex-none z-10 lg:absolute lg:left-10 lg:top-1/2 lg:-translate-y-1/2">
-             <img 
-              src="https://www.dropbox.com/scl/fi/fsxbk5lsvs01mey2xu0np/Logo.webp?rlkey=dwhud57pj0waxfrmt4da7mj62&dl=1" 
-              alt="Ikarus Delta Logo" 
-              className="h-12 w-auto brightness-0 invert object-contain opacity-90 hover:opacity-100 transition-opacity"
-            />
-         </div>
-
          {/* Navigation - Scrollable Area */}
          <div className="flex-1 flex items-center justify-start lg:justify-center overflow-x-auto no-scrollbar mask-linear-fade h-full mx-2" ref={navContainerRef}>
             <div className="flex items-center gap-6 lg:gap-10 px-4 min-w-max mx-auto h-full">

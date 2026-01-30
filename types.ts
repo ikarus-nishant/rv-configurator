@@ -1,5 +1,4 @@
-
-
+import React from 'react';
 
 export enum ConfigCategory {
   SIZE = 'Size',
@@ -49,10 +48,15 @@ declare global {
       primitive: any;
       sphereGeometry: any;
       meshBasicMaterial: any;
+      meshStandardMaterial: any;
+      boxGeometry: any;
       ambientLight: any;
       spotLight: any;
+      pointLight: any;
+      directionalLight: any;
+      orthographicCamera: any;
+      perspectiveCamera: any;
       'model-viewer': any;
-      [elemName: string]: any;
     }
   }
 }

@@ -48,6 +48,7 @@ export const CONFIG_DATA: CategoryData[] = [
             price: 0, 
             description: 'Master suite in front, dining in rear.', 
             availableForSize: ['23'],
+            icon: 'https://gxgxlnorfuqagpfcbrsm.supabase.co/storage/v1/object/public/demo-assets/icons/7749.webp',
             modelUrl: 'https://dl.dropbox.com/scl/fi/yn7crt148zi6c3ahpdi8g/fp-left.glb?rlkey=9cgs7g8t8e74j7b40frp4euc2&dl=1'
           },
           { 
@@ -56,6 +57,7 @@ export const CONFIG_DATA: CategoryData[] = [
             price: 1500, 
             description: 'Rear corner bed with overhead bunk.', 
             availableForSize: ['23'],
+            icon: 'https://gxgxlnorfuqagpfcbrsm.supabase.co/storage/v1/object/public/demo-assets/icons/8864.webp',
             modelUrl: 'https://dl.dropbox.com/scl/fi/wyj68k36zs3s2v5nfrq0n/fp-right.glb?rlkey=cj0cs6fjxim58w3j5s0eg17ov&dl=1'
           },
           { 
@@ -64,6 +66,7 @@ export const CONFIG_DATA: CategoryData[] = [
             price: 0, 
             description: 'Spacious front bedroom with panoramic view.', 
             availableForSize: ['25'],
+            icon: 'https://gxgxlnorfuqagpfcbrsm.supabase.co/storage/v1/object/public/demo-assets/icons/7749.webp',
             modelUrl: 'https://dl.dropbox.com/scl/fi/yn7crt148zi6c3ahpdi8g/fp-left.glb?rlkey=9cgs7g8t8e74j7b40frp4euc2&dl=1'
           },
           { 
@@ -72,6 +75,7 @@ export const CONFIG_DATA: CategoryData[] = [
             price: 0, 
             description: 'Bedroom tucked in the back for privacy.', 
             availableForSize: ['25'],
+            icon: 'https://gxgxlnorfuqagpfcbrsm.supabase.co/storage/v1/object/public/demo-assets/icons/8864.webp',
             modelUrl: 'https://dl.dropbox.com/scl/fi/wyj68k36zs3s2v5nfrq0n/fp-right.glb?rlkey=cj0cs6fjxim58w3j5s0eg17ov&dl=1'
           },
           { 
@@ -80,6 +84,7 @@ export const CONFIG_DATA: CategoryData[] = [
             price: 0, 
             description: 'Maximum master suite luxury.', 
             availableForSize: ['27'],
+            icon: 'https://gxgxlnorfuqagpfcbrsm.supabase.co/storage/v1/object/public/demo-assets/icons/7749.webp',
             modelUrl: 'https://dl.dropbox.com/scl/fi/yn7crt148zi6c3ahpdi8g/fp-left.glb?rlkey=9cgs7g8t8e74j7b40frp4euc2&dl=1'
           },
           { 
@@ -88,6 +93,7 @@ export const CONFIG_DATA: CategoryData[] = [
             price: 0, 
             description: 'Secluded rear bedroom retreat.', 
             availableForSize: ['27'],
+            icon: 'https://gxgxlnorfuqagpfcbrsm.supabase.co/storage/v1/object/public/demo-assets/icons/8864.webp',
             modelUrl: 'https://dl.dropbox.com/scl/fi/wyj68k36zs3s2v5nfrq0n/fp-right.glb?rlkey=cj0cs6fjxim58w3j5s0eg17ov&dl=1'
           },
         ]

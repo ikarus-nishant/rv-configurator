@@ -6,21 +6,6 @@ import { OrbitControls as OrbitControlsImpl } from 'three-stdlib';
 import { ProductConfig, ConfigCategory } from '../types';
 import { CONFIG_DATA } from '../constants';
 
-declare global {
-  namespace JSX {
-    interface IntrinsicElements {
-      primitive: any;
-      group: any;
-      mesh: any;
-      sphereGeometry: any;
-      meshBasicMaterial: any;
-      meshStandardMaterial: any;
-      boxGeometry: any;
-      [elemName: string]: any;
-    }
-  }
-}
-
 interface ProductModelProps {
   config: ProductConfig;
   activeTab?: ConfigCategory;

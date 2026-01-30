@@ -19,9 +19,11 @@ const Loader = ({ forcedActive = false }: { forcedActive?: boolean }) => {
       className={`absolute inset-0 z-50 flex flex-col items-center justify-center bg-[#f0f0f0] transition-opacity duration-500 ${isActuallyActive ? 'opacity-100' : 'opacity-0 pointer-events-none'}`}
     >
       <div className="flex flex-col items-center px-6 text-center">
-         <div className="text-xl lg:text-3xl font-light font-overpass mb-8 tracking-tight text-neutral-900 animate-pulse">
-            Ikarus <span className="font-semibold text-medium-carmine-700">Delta</span>
-         </div>
+         <img 
+            src="https://gxgxlnorfuqagpfcbrsm.supabase.co/storage/v1/object/public/demo-assets/icons/loader-logo.webp" 
+            alt="Ikarus Delta" 
+            className="w-48 lg:w-72 mb-8 animate-pulse object-contain"
+         />
          
          <div className="w-40 lg:w-48 h-[2px] bg-neutral-200 relative overflow-hidden rounded-none">
             <div 
@@ -37,17 +39,6 @@ const Loader = ({ forcedActive = false }: { forcedActive?: boolean }) => {
     </div>
   );
 };
-
-declare global {
-  namespace JSX {
-    interface IntrinsicElements {
-      group: any;
-      ambientLight: any;
-      spotLight: any;
-      [elemName: string]: any;
-    }
-  }
-}
 
 interface SceneProps {
   config: ProductConfig;
@@ -153,12 +144,12 @@ const Scene: React.FC<SceneProps> = ({ config, activeTab, onEnterAR }) => {
 
   return (
     <div className="w-full h-full bg-[#f0f0f0] relative">
-       {/* Mobile Logo Overlay - Bottom Left */}
-       <div className="absolute bottom-6 left-6 z-10 pointer-events-none select-none lg:hidden">
+       {/* Logo Overlay - Bottom Left (Visible on all screens) */}
+       <div className="absolute bottom-6 left-6 z-10 pointer-events-none select-none">
           <img 
             src="https://gxgxlnorfuqagpfcbrsm.supabase.co/storage/v1/object/public/demo-assets/icons/Logo.webp" 
             alt="Ikarus Delta Logo" 
-            className="h-8 w-auto brightness-0 opacity-80 object-contain"
+            className="h-14 w-auto brightness-0 opacity-80 object-contain"
           />
        </div>
 
