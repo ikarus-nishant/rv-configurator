@@ -216,6 +216,8 @@ const Configurator: React.FC<ConfiguratorProps> = ({ config, setConfig, activeTa
                             <div className="w-20 h-20 lg:w-24 lg:h-24 bg-neutral-100 flex-shrink-0 mr-5 relative overflow-hidden border border-neutral-100">
                                {option.icon ? (
                                  <img src={option.icon} alt={option.label} className="w-full h-full object-cover mix-blend-multiply" />
+                               ) : option.colorCode ? (
+                                 <div className="w-full h-full" style={{ backgroundColor: option.colorCode }} />
                                ) : (
                                  <div className="w-full h-full bg-neutral-200 flex items-center justify-center text-neutral-300">
                                     <svg width="24" height="24" viewBox="0 0 24 24" fill="currentColor"><rect width="24" height="24" /></svg>

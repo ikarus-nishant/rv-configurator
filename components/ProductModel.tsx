@@ -46,22 +46,29 @@ interface ProductModelProps {
 
 const EXTERIOR_URL = 'https://dl.dropbox.com/scl/fi/n893bek5wluovtcl5qtpj/ext.glb?rlkey=9n026wssl8o6kf6sp4iix4lfd&dl=1';
 const INTERIOR_URL = 'https://dl.dropbox.com/scl/fi/u2jgaow3rbixi8q6lnufr/int.glb?rlkey=eidbdbto55qmngvzs9xnk4p5j&dl=1';
-const FLOORPLAN_URL = 'https://dl.dropbox.com/scl/fi/yn7crt148zi6c3ahpdi8g/fp.glb?rlkey=9cgs7g8t8e74j7b40frp4euc2&dl=1';
+
+// Generic component to load variable parts (cabinets, upholstery, shell, floorplan)
+const DynamicPartModel: React.FC<{ url: string }> = ({ url }) => {
+  const { scene } = useGLTF(url);
+  return <primitive object={scene} />;
+}
 
 const ExteriorModel: React.FC<{ config: ProductConfig }> = ({ config }) => {
-  const { scene } = useGLTF(EXTERIOR_URL);
+  const { scene: baseScene } = useGLTF(EXTERIOR_URL);
 
-  useEffect(() => {
-    const materialSection = CONFIG_DATA.find(c => c.id === ConfigCategory.EXTERIOR)
+  // Determine Shell URL based on config
+  const materialSection = CONFIG_DATA.find(c => c.id === ConfigCategory.EXTERIOR)
       ?.sections.find(s => s.stateKey === 'material');
-    const selectedOption = materialSection?.options.find(o => o.id === config.material);
-    const targetColor = selectedOption?.colorCode || '#E0E0E0';
+  const selectedOption = materialSection?.options.find(o => o.id === config.material);
+  const shellUrl = selectedOption?.modelUrl || 'https://dl.dropbox.com/scl/fi/9whp0impipzolgirc4z5r/ext-alu.glb?rlkey=7rjgvd2lh1vdpziew4nocw5lb&dl=1';
 
+  // Toggle Add-ons on the Base Scene
+  useEffect(() => {
     const exteriorSection = CONFIG_DATA.find(c => c.id === ConfigCategory.EXTERIOR)
       ?.sections.find(s => s.stateKey === 'exterior');
     const exteriorIds = exteriorSection?.options.map(o => o.id) || [];
 
-    scene.traverse((child) => {
+    baseScene.traverse((child) => {
       // Check for add-ons visibility on all objects (Groups, Meshes, etc.)
       const associatedOptionId = exteriorIds.find(id => 
         child.name.toLowerCase().includes(id.toLowerCase())
@@ -74,31 +81,34 @@ const ExteriorModel: React.FC<{ config: ProductConfig }> = ({ config }) => {
       if (child instanceof Mesh) {
         child.castShadow = true;
         child.receiveShadow = true;
-
-        if (child.material && (child.material as any).name === 'Steel') {
-          (child.material as any).color.set(targetColor);
-          
-          if (config.material === 'matte_black') {
-            (child.material as any).roughness = 0.9;
-            (child.material as any).metalness = 0.1;
-          } else if (config.material === 'aluminum') {
-            (child.material as any).roughness = 0.3;
-            (child.material as any).metalness = 1.0;
-          } else {
-             (child.material as any).roughness = 0.5;
-             (child.material as any).metalness = 0.5;
-          }
-        }
       }
     });
-  }, [config, scene]);
+  }, [config, baseScene]);
 
-  return <primitive object={scene} />;
+  return (
+    <group>
+      {/* Base Exterior (Chassis, Wheels, etc.) */}
+      <primitive object={baseScene} />
+      
+      {/* Dynamic Shell (Aluminum, Red, Teal) */}
+      <Suspense fallback={null}>
+         <DynamicPartModel url={shellUrl} />
+      </Suspense>
+    </group>
+  );
 };
 
-const FloorplanModel: React.FC = () => {
-  const { scene } = useGLTF(FLOORPLAN_URL);
-  return <primitive object={scene} />;
+const FloorplanModel: React.FC<{ config: ProductConfig }> = ({ config }) => {
+  const floorplanSection = CONFIG_DATA.find(c => c.id === ConfigCategory.FLOORPLAN)
+      ?.sections.find(s => s.stateKey === 'floorplan');
+  const selectedOption = floorplanSection?.options.find(o => o.id === config.floorplan);
+  const url = selectedOption?.modelUrl || 'https://dl.dropbox.com/scl/fi/yn7crt148zi6c3ahpdi8g/fp-left.glb?rlkey=9cgs7g8t8e74j7b40frp4euc2&dl=1';
+  
+  return (
+    <Suspense fallback={null}>
+       <DynamicPartModel url={url} />
+    </Suspense>
+  );
 };
 
 interface HotspotProps {
@@ -152,12 +162,6 @@ const Hotspot: React.FC<HotspotProps> = ({ position, isActive, onClick }) => {
     </group>
   );
 };
-
-// Generic component to load variable parts (cabinets, upholstery)
-const DynamicPartModel: React.FC<{ url: string }> = ({ url }) => {
-  const { scene } = useGLTF(url);
-  return <primitive object={scene} />;
-}
 
 interface InteriorModelProps {
   activeWaypoint: string;
@@ -408,7 +412,7 @@ const ProductModel: React.FC<ProductModelProps> = ({ config, activeTab, resetTri
       {showExterior && <ExteriorModel config={config} />}
       {showFloorplan && (
         <>
-            <FloorplanModel />
+            <FloorplanModel config={config} />
             <OrthographicCamera 
                 makeDefault 
                 position={[0, 50, 0]} 
@@ -435,12 +439,15 @@ const ProductModel: React.FC<ProductModelProps> = ({ config, activeTab, resetTri
 
 // Preload models
 useGLTF.preload(EXTERIOR_URL);
-useGLTF.preload(FLOORPLAN_URL);
 useGLTF.preload(INTERIOR_URL);
 
-// Preload Modular Variants (Cabinets & Upholstery)
+// Preload Modular Variants (Cabinets, Upholstery, Exterior Shells, & Floorplans)
 CONFIG_DATA.forEach(category => {
-  if (category.id === ConfigCategory.INTERIOR) {
+  if (
+    category.id === ConfigCategory.INTERIOR || 
+    category.id === ConfigCategory.EXTERIOR || 
+    category.id === ConfigCategory.FLOORPLAN
+  ) {
     category.sections.forEach(section => {
       section.options.forEach(option => {
         if (option.modelUrl) {

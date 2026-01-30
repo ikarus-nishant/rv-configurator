@@ -1,5 +1,6 @@
 
 
+
 export enum ConfigCategory {
   SIZE = 'Size',
   FLOORPLAN = 'Floorplan',
@@ -14,7 +15,7 @@ export interface ProductConfig {
   exterior: string[];
   interior: string[];
   cabinets: string;
-  material: 'aluminum' | 'matte_black' | 'satin_white' | 'forest_green';
+  material: 'aluminum' | 'red' | 'teal';
 }
 
 export interface ConfigOption {

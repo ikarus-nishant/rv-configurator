@@ -43,15 +43,54 @@ export const CONFIG_DATA: CategoryData[] = [
         stateKey: 'floorplan',
         multiSelect: false,
         options: [
-          { id: '23fb', label: 'Front Bed Queen', price: 0, description: 'Master suite in front, dining in rear.', availableForSize: ['23'] },
-          { id: '23cb', label: 'Corner Bunk', price: 1500, description: 'Rear corner bed with overhead bunk.', availableForSize: ['23'] },
-          { id: '23tb', label: 'Twin Bed', price: 500, description: 'Dual twin beds for flexible sleeping.', availableForSize: ['23'] },
-          { id: '25fb', label: 'Front Bed Queen', price: 0, description: 'Spacious front bedroom with panoramic view.', availableForSize: ['25'] },
-          { id: '25rb', label: 'Rear Bed Queen', price: 0, description: 'Bedroom tucked in the back for privacy.', availableForSize: ['25'] },
-          { id: '25fb_twin', label: 'Front Bed Twin', price: 500, description: 'Open center aisle with twin beds.', availableForSize: ['25'] },
-          { id: '27fb', label: 'Front Bed Queen', price: 0, description: 'Maximum master suite luxury.', availableForSize: ['27'] },
-          { id: '27rb', label: 'Rear Bed Queen', price: 0, description: 'Secluded rear bedroom retreat.', availableForSize: ['27'] },
-          { id: '27office', label: 'Home Office', price: 2500, description: 'Dedicated desk workspace with sleeping options.', availableForSize: ['27'] },
+          { 
+            id: '23fb', 
+            label: 'Front Bed Queen', 
+            price: 0, 
+            description: 'Master suite in front, dining in rear.', 
+            availableForSize: ['23'],
+            modelUrl: 'https://dl.dropbox.com/scl/fi/yn7crt148zi6c3ahpdi8g/fp-left.glb?rlkey=9cgs7g8t8e74j7b40frp4euc2&dl=1'
+          },
+          { 
+            id: '23cb', 
+            label: 'Corner Bunk', 
+            price: 1500, 
+            description: 'Rear corner bed with overhead bunk.', 
+            availableForSize: ['23'],
+            modelUrl: 'https://dl.dropbox.com/scl/fi/wyj68k36zs3s2v5nfrq0n/fp-right.glb?rlkey=cj0cs6fjxim58w3j5s0eg17ov&dl=1'
+          },
+          { 
+            id: '25fb', 
+            label: 'Front Bed Queen', 
+            price: 0, 
+            description: 'Spacious front bedroom with panoramic view.', 
+            availableForSize: ['25'],
+            modelUrl: 'https://dl.dropbox.com/scl/fi/yn7crt148zi6c3ahpdi8g/fp-left.glb?rlkey=9cgs7g8t8e74j7b40frp4euc2&dl=1'
+          },
+          { 
+            id: '25rb', 
+            label: 'Rear Bed Queen', 
+            price: 0, 
+            description: 'Bedroom tucked in the back for privacy.', 
+            availableForSize: ['25'],
+            modelUrl: 'https://dl.dropbox.com/scl/fi/wyj68k36zs3s2v5nfrq0n/fp-right.glb?rlkey=cj0cs6fjxim58w3j5s0eg17ov&dl=1'
+          },
+          { 
+            id: '27fb', 
+            label: 'Front Bed Queen', 
+            price: 0, 
+            description: 'Maximum master suite luxury.', 
+            availableForSize: ['27'],
+            modelUrl: 'https://dl.dropbox.com/scl/fi/yn7crt148zi6c3ahpdi8g/fp-left.glb?rlkey=9cgs7g8t8e74j7b40frp4euc2&dl=1'
+          },
+          { 
+            id: '27rb', 
+            label: 'Rear Bed Queen', 
+            price: 0, 
+            description: 'Secluded rear bedroom retreat.', 
+            availableForSize: ['27'],
+            modelUrl: 'https://dl.dropbox.com/scl/fi/wyj68k36zs3s2v5nfrq0n/fp-right.glb?rlkey=cj0cs6fjxim58w3j5s0eg17ov&dl=1'
+          },
         ]
       }
     ]
@@ -70,31 +109,24 @@ export const CONFIG_DATA: CategoryData[] = [
             price: 0,
             colorCode: '#E0E0E0',
             icon: 'https://www.dropbox.com/scl/fi/efzaughr2p219kw9sv13e/Classic-Aluminium.webp?rlkey=2j6l24rvfv7igo4jr6gxguxod&dl=1',
-            description: 'A professional, bright silver finish with a distinct horizontal brushed metal texture.'
+            description: 'A professional, bright silver finish with a distinct horizontal brushed metal texture.',
+            modelUrl: 'https://dl.dropbox.com/scl/fi/9whp0impipzolgirc4z5r/ext-alu.glb?rlkey=7rjgvd2lh1vdpziew4nocw5lb&dl=1'
           },
           { 
-            id: 'matte_black', 
-            label: 'Stealth Matte', 
+            id: 'red', 
+            label: 'Sunset Red', 
             price: 3500,
-            colorCode: '#222222',
-            icon: 'https://www.dropbox.com/scl/fi/ionjxkl0gx4se9n3tw2w9/Stealth-Matte.webp?rlkey=piof69fli83680h7yj7rfjozn&dl=1',
-            description: 'A deep, non-reflective obsidian black with a smooth, velvety surface.'
+            colorCode: '#8B0000',
+            description: 'A bold, adventurous deep red matte finish.',
+            modelUrl: 'https://dl.dropbox.com/scl/fi/xykyfx86efwxb6821dd44/ext-red.glb?rlkey=day54kc3g371iq7kmqb1zxg1r&dl=1'
           },
           { 
-            id: 'satin_white', 
-            label: 'Arctic Satin', 
+            id: 'teal', 
+            label: 'Coastal Teal', 
             price: 2000,
-            colorCode: '#F5F5F5',
-            icon: 'https://www.dropbox.com/scl/fi/sfbxeleq08pkmjaiv1p7m/Arctic-Satin.webp?rlkey=09acizvlhxm37xc98o1j1v8lm&dl=1',
-            description: 'A clean, cool-toned frost silver with a sophisticated low-sheen finish.'
-          },
-          { 
-            id: 'forest_green', 
-            label: 'Ranger Green', 
-            price: 2500,
-            colorCode: '#2F4F2F',
-            icon: 'https://www.dropbox.com/scl/fi/scmxoy52mcrhlovi9wog0/Ranger-Green.webp?rlkey=4aklplq5y1jpjmn2zn7c9k9t4&dl=1',
-            description: 'A muted, earthy forest drab with a flat matte texture.'
+            colorCode: '#008080',
+            description: 'A calming, sea-inspired satin teal finish.',
+            modelUrl: 'https://dl.dropbox.com/scl/fi/4honghp9ii4a6t3c129fd/ext-teal.glb?rlkey=qplf4mti2t3busb4hx0zr8hbu&dl=1'
           },
         ]
       },
