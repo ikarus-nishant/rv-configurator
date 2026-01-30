@@ -146,9 +146,30 @@ export const CONFIG_DATA: CategoryData[] = [
         stateKey: 'cabinets',
         multiSelect: false,
         options: [
-          { id: 'natural_oak', label: 'Natural Oak', price: 0, description: 'Light, organic wood finish.' },
-          { id: 'walnut', label: 'Deep Walnut', price: 800, description: 'Rich, dark wood grain.' },
-          { id: 'modern_gray', label: 'Modern Gray', price: 500, description: 'Sleek, painted minimalist finish.' },
+          { 
+            id: 'natural_oak', 
+            label: 'Natural Oak', 
+            price: 0, 
+            description: 'Light, organic wood finish.',
+            icon: 'https://www.dropbox.com/scl/fi/cvfjbnc1aseiyax7wfp4h/Oak.jpg?rlkey=xxsgslx6fphukwwt4tt9bropb&dl=1',
+            texture: 'https://www.dropbox.com/scl/fi/cvfjbnc1aseiyax7wfp4h/Oak.jpg?rlkey=xxsgslx6fphukwwt4tt9bropb&dl=1'
+          },
+          { 
+            id: 'walnut', 
+            label: 'Deep Walnut', 
+            price: 800, 
+            description: 'Rich, dark wood grain.',
+            icon: 'https://www.dropbox.com/scl/fi/8gipxmldaw1hapg1mq7vk/Walnut.jpg?rlkey=ca6d0gp3lskydr4delhq0cb4t&dl=1',
+            texture: 'https://www.dropbox.com/scl/fi/8gipxmldaw1hapg1mq7vk/Walnut.jpg?rlkey=ca6d0gp3lskydr4delhq0cb4t&dl=1'
+          },
+          { 
+            id: 'modern_gray', 
+            label: 'Modern Gray', 
+            price: 500, 
+            description: 'Sleek, painted minimalist finish.',
+            icon: 'https://www.dropbox.com/scl/fi/op9i56x61tz6vtf2uoooq/Modern-Grey.jpg?rlkey=dz0pc51x1i19itam3oq9812k5&dl=1',
+            texture: 'https://www.dropbox.com/scl/fi/op9i56x61tz6vtf2uoooq/Modern-Grey.jpg?rlkey=dz0pc51x1i19itam3oq9812k5&dl=1'
+          },
         ]
       }
     ]

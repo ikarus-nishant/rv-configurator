@@ -1,7 +1,7 @@
 import React, { useEffect, useRef, useState, Suspense, useMemo } from 'react';
-import { useGLTF, Html, OrthographicCamera } from '@react-three/drei';
+import { useGLTF, Html, OrthographicCamera, useTexture } from '@react-three/drei';
 import { useThree, useFrame } from '@react-three/fiber';
-import { Mesh, Vector3, Object3D, PerspectiveCamera, Quaternion, Group } from 'three';
+import { Mesh, Vector3, Object3D, PerspectiveCamera, Quaternion, Group, SRGBColorSpace } from 'three';
 import { OrbitControls as OrbitControlsImpl } from 'three-stdlib';
 import { ProductConfig, ConfigCategory } from '../types';
 import { CONFIG_DATA } from '../constants';
@@ -152,11 +152,34 @@ interface InteriorModelProps {
   activeWaypoint: string;
   onTargetFound: (target: Object3D) => void;
   onUserClick: (waypoint: string) => void;
+  config: ProductConfig;
 }
 
-const InteriorModel: React.FC<InteriorModelProps> = ({ activeWaypoint, onTargetFound, onUserClick }) => {
+const InteriorModel: React.FC<InteriorModelProps> = ({ activeWaypoint, onTargetFound, onUserClick, config }) => {
   const { scene } = useGLTF(INTERIOR_URL);
   const [waypoints, setWaypoints] = useState<{name: string, position: Vector3}[]>([]);
+
+  // Find the selected texture URL
+  const cabinetOption = CONFIG_DATA.find(c => c.id === ConfigCategory.INTERIOR)
+    ?.sections.find(s => s.stateKey === 'cabinets')
+    ?.options.find(o => o.id === config.cabinets);
+    
+  // Default to a safe fallback if somehow undefined, though config should be valid
+  const textureUrl = cabinetOption?.texture || cabinetOption?.icon || 'https://www.dropbox.com/scl/fi/cvfjbnc1aseiyax7wfp4h/Oak.jpg?rlkey=xxsgslx6fphukwwt4tt9bropb&dl=1';
+
+  const texture = useTexture(textureUrl);
+  texture.flipY = false;
+  texture.colorSpace = SRGBColorSpace;
+
+  useEffect(() => {
+    // Apply texture to WoodLaminate.001
+    scene.traverse((child) => {
+      if (child instanceof Mesh && child.material && child.material.name === 'WoodLaminate.001') {
+        child.material.map = texture;
+        child.material.needsUpdate = true;
+      }
+    });
+  }, [scene, texture]);
 
   useEffect(() => {
     const foundWaypoints: {name: string, position: Vector3}[] = [];
@@ -386,6 +409,7 @@ const ProductModel: React.FC<ProductModelProps> = ({ config, activeTab, resetTri
             activeWaypoint={activeWaypoint}
             onTargetFound={setInteriorTarget}
             onUserClick={(wp) => onWaypointChange && onWaypointChange(wp)}
+            config={config}
           />
         </Suspense>
       )}
