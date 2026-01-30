@@ -155,7 +155,7 @@ const Scene: React.FC<SceneProps> = ({ config, activeTab, onEnterAR }) => {
        {/* Mobile Logo Overlay - Bottom Left */}
        <div className="absolute bottom-6 left-6 z-10 pointer-events-none select-none lg:hidden">
           <img 
-            src="https://www.dropbox.com/scl/fi/fsxbk5lsvs01mey2xu0np/Logo.webp?rlkey=dwhud57pj0waxfrmt4da7mj62&dl=1" 
+            src="https://gxgxlnorfuqagpfcbrsm.supabase.co/storage/v1/object/public/demo-assets/icons/Logo.webp" 
             alt="Ikarus Delta Logo" 
             className="h-8 w-auto brightness-0 opacity-80 object-contain"
           />

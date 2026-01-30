@@ -103,7 +103,7 @@ const ARView: React.FC<ARViewProps> = ({ config, onExit }) => {
 
       <model-viewer
         ref={modelViewerRef}
-        src="https://dl.dropbox.com/scl/fi/n893bek5wluovtcl5qtpj/ext.glb?rlkey=9n026wssl8o6kf6sp4iix4lfd&dl=1"
+        src="https://gxgxlnorfuqagpfcbrsm.supabase.co/storage/v1/object/public/demo-assets/3d-assets/ext.glb"
         ar
         ar-modes="webxr scene-viewer quick-look"
         camera-controls

@@ -29,8 +29,8 @@ interface ProductModelProps {
   onTransitionStateChange?: (isTransitioning: boolean) => void;
 }
 
-const EXTERIOR_URL = 'https://dl.dropbox.com/scl/fi/n893bek5wluovtcl5qtpj/ext.glb?rlkey=9n026wssl8o6kf6sp4iix4lfd&dl=1';
-const INTERIOR_URL = 'https://dl.dropbox.com/scl/fi/u2jgaow3rbixi8q6lnufr/int.glb?rlkey=eidbdbto55qmngvzs9xnk4p5j&dl=1';
+const EXTERIOR_URL = 'https://gxgxlnorfuqagpfcbrsm.supabase.co/storage/v1/object/public/demo-assets/3d-assets/ext.glb';
+const INTERIOR_URL = 'https://gxgxlnorfuqagpfcbrsm.supabase.co/storage/v1/object/public/demo-assets/3d-assets/int.glb';
 
 // Generic component to load variable parts (cabinets, upholstery, shell, floorplan)
 const DynamicPartModel: React.FC<{ url: string }> = ({ url }) => {
@@ -45,7 +45,7 @@ const ExteriorModel: React.FC<{ config: ProductConfig }> = ({ config }) => {
   const materialSection = CONFIG_DATA.find(c => c.id === ConfigCategory.EXTERIOR)
       ?.sections.find(s => s.stateKey === 'material');
   const selectedOption = materialSection?.options.find(o => o.id === config.material);
-  const shellUrl = selectedOption?.modelUrl || 'https://dl.dropbox.com/scl/fi/9whp0impipzolgirc4z5r/ext-alu.glb?rlkey=7rjgvd2lh1vdpziew4nocw5lb&dl=1';
+  const shellUrl = selectedOption?.modelUrl || 'https://gxgxlnorfuqagpfcbrsm.supabase.co/storage/v1/object/public/demo-assets/3d-assets/ext-alu.glb';
 
   // Toggle Add-ons on the Base Scene
   useEffect(() => {
@@ -87,7 +87,7 @@ const FloorplanModel: React.FC<{ config: ProductConfig }> = ({ config }) => {
   const floorplanSection = CONFIG_DATA.find(c => c.id === ConfigCategory.FLOORPLAN)
       ?.sections.find(s => s.stateKey === 'floorplan');
   const selectedOption = floorplanSection?.options.find(o => o.id === config.floorplan);
-  const url = selectedOption?.modelUrl || 'https://dl.dropbox.com/scl/fi/yn7crt148zi6c3ahpdi8g/fp-left.glb?rlkey=9cgs7g8t8e74j7b40frp4euc2&dl=1';
+  const url = selectedOption?.modelUrl || 'https://gxgxlnorfuqagpfcbrsm.supabase.co/storage/v1/object/public/demo-assets/3d-assets/fp-left.glb';
   
   return (
     <Suspense fallback={null}>
@@ -164,7 +164,7 @@ const InteriorModel: React.FC<InteriorModelProps> = ({ activeWaypoint, onTargetF
   const cabinetOption = CONFIG_DATA.find(c => c.id === ConfigCategory.INTERIOR)
     ?.sections.find(s => s.stateKey === 'cabinets')
     ?.options.find(o => o.id === config.cabinets);
-  const cabinetModelUrl = cabinetOption?.modelUrl || 'https://dl.dropbox.com/scl/fi/12xpge7rvarwykcdvujvn/int-wood-oak.glb?rlkey=j0i7ek23boootva7ep3oewdqc&dl=1';
+  const cabinetModelUrl = cabinetOption?.modelUrl || 'https://gxgxlnorfuqagpfcbrsm.supabase.co/storage/v1/object/public/demo-assets/3d-assets/int-wood-oak.glb';
 
   // 2. Resolve Upholstery URL
   const interiorSection = CONFIG_DATA.find(c => c.id === ConfigCategory.INTERIOR)
@@ -172,7 +172,7 @@ const InteriorModel: React.FC<InteriorModelProps> = ({ activeWaypoint, onTargetF
   // config.interior is string[], but for upholstery we only select one ID.
   const selectedInteriorId = config.interior[0]; 
   const upholsteryOption = interiorSection?.options.find(o => o.id === selectedInteriorId);
-  const upholsteryModelUrl = upholsteryOption?.modelUrl || 'https://dl.dropbox.com/scl/fi/0gmudfs0k6jas3e30wdaz/uph-pebble.glb?rlkey=ue0goy58gjl0w2sh3g2itbhfh&dl=1';
+  const upholsteryModelUrl = upholsteryOption?.modelUrl || 'https://gxgxlnorfuqagpfcbrsm.supabase.co/storage/v1/object/public/demo-assets/3d-assets/uph-pebble.glb';
 
   // Process Waypoints on the Base Scene
   useEffect(() => {
