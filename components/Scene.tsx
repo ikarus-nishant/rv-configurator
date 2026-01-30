@@ -44,6 +44,7 @@ declare global {
       group: any;
       ambientLight: any;
       spotLight: any;
+      [elemName: string]: any;
     }
   }
 }

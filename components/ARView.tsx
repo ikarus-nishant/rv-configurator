@@ -1,6 +1,5 @@
-import React, { useEffect, useRef } from 'react';
-import { CONFIG_DATA } from '../constants';
-import { ConfigCategory, ProductConfig } from '../types';
+import React, { useRef } from 'react';
+import { ProductConfig } from '../types';
 import { triggerHaptic } from '../utils/haptics';
 
 // Augment the global JSX namespace to include custom elements
@@ -8,6 +7,7 @@ declare global {
   namespace JSX {
     interface IntrinsicElements {
       'model-viewer': any;
+      [elemName: string]: any;
     }
   }
 }
@@ -17,60 +17,21 @@ interface ARViewProps {
   onExit?: () => void;
 }
 
+const AR_MODELS: Record<string, string> = {
+  aluminum: 'https://gxgxlnorfuqagpfcbrsm.supabase.co/storage/v1/object/public/demo-assets/3d-assets/ar-alu.glb',
+  red: 'https://gxgxlnorfuqagpfcbrsm.supabase.co/storage/v1/object/public/demo-assets/3d-assets/ar-red.glb',
+  teal: 'https://gxgxlnorfuqagpfcbrsm.supabase.co/storage/v1/object/public/demo-assets/3d-assets/ar-teal.glb'
+};
+
 const ARView: React.FC<ARViewProps> = ({ config, onExit }) => {
   const modelViewerRef = useRef<any>(null);
 
-  useEffect(() => {
-    const params = new URLSearchParams(window.location.search);
-    // Use prop config if available, fallback to URL params
-    const materialId = config?.material || params.get('material');
-
-    const handleLoad = () => {
-      const modelViewer = modelViewerRef.current;
-      if (!modelViewer || !modelViewer.model) return;
-
-      // Apply Material Configuration
-      if (materialId) {
-        // Find material data in new structure
-        const materialSection = CONFIG_DATA.find(c => c.id === ConfigCategory.EXTERIOR)
-          ?.sections.find(s => s.stateKey === 'material');
-        const materialData = materialSection?.options.find(o => o.id === materialId);
-        
-        if (materialData?.colorCode) {
-          const material = modelViewer.model.materials.find((m: any) => m.name === 'Steel');
-          if (material) {
-             // Convert hex to RGB array [r, g, b, alpha]
-             const hex = materialData.colorCode.replace('#', '');
-             const r = parseInt(hex.substring(0, 2), 16) / 255;
-             const g = parseInt(hex.substring(2, 4), 16) / 255;
-             const b = parseInt(hex.substring(4, 6), 16) / 255;
-             
-             material.pbrMetallicRoughness.setBaseColorFactor([r, g, b, 1.0]);
-
-             // Adjust roughness/metalness based on type
-             if (materialId === 'matte_black') {
-                material.pbrMetallicRoughness.setRoughnessFactor(0.9);
-                material.pbrMetallicRoughness.setMetallicFactor(0.1);
-             } else if (materialId === 'aluminum') {
-                material.pbrMetallicRoughness.setRoughnessFactor(0.3);
-                material.pbrMetallicRoughness.setMetallicFactor(1.0);
-             }
-          }
-        }
-      }
-    };
-
-    const mv = modelViewerRef.current;
-    if (mv) {
-      mv.addEventListener('load', handleLoad);
-    }
-
-    return () => {
-      if (mv) {
-        mv.removeEventListener('load', handleLoad);
-      }
-    };
-  }, [config]);
+  // Determine material ID from config or URL params
+  const params = new URLSearchParams(window.location.search);
+  const materialId = config?.material || params.get('material') || 'aluminum';
+  
+  // Select correct model URL
+  const modelSrc = AR_MODELS[materialId] || AR_MODELS['aluminum'];
 
   const handleClose = (e: React.MouseEvent) => {
     triggerHaptic();
@@ -103,7 +64,7 @@ const ARView: React.FC<ARViewProps> = ({ config, onExit }) => {
 
       <model-viewer
         ref={modelViewerRef}
-        src="https://gxgxlnorfuqagpfcbrsm.supabase.co/storage/v1/object/public/demo-assets/3d-assets/ext.glb"
+        src={modelSrc}
         ar
         ar-modes="webxr scene-viewer quick-look"
         camera-controls

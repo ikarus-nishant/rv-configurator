@@ -1,7 +1,7 @@
 import React, { useEffect, useRef, useState, Suspense } from 'react';
 import { useGLTF, Html, OrthographicCamera } from '@react-three/drei';
 import { useThree, useFrame } from '@react-three/fiber';
-import { Mesh, Vector3, Object3D, PerspectiveCamera, Quaternion } from 'three';
+import * as THREE from 'three';
 import { OrbitControls as OrbitControlsImpl } from 'three-stdlib';
 import { ProductConfig, ConfigCategory } from '../types';
 import { CONFIG_DATA } from '../constants';
@@ -16,6 +16,7 @@ declare global {
       meshBasicMaterial: any;
       meshStandardMaterial: any;
       boxGeometry: any;
+      [elemName: string]: any;
     }
   }
 }
@@ -63,7 +64,7 @@ const ExteriorModel: React.FC<{ config: ProductConfig }> = ({ config }) => {
         child.visible = config.exterior.includes(associatedOptionId);
       }
 
-      if (child instanceof Mesh) {
+      if (child instanceof THREE.Mesh) {
         child.castShadow = true;
         child.receiveShadow = true;
       }
@@ -97,7 +98,7 @@ const FloorplanModel: React.FC<{ config: ProductConfig }> = ({ config }) => {
 };
 
 interface HotspotProps {
-  position: Vector3;
+  position: THREE.Vector3;
   isActive: boolean;
   onClick: () => void;
 }
@@ -150,7 +151,7 @@ const Hotspot: React.FC<HotspotProps> = ({ position, isActive, onClick }) => {
 
 interface InteriorModelProps {
   activeWaypoint: string;
-  onTargetFound: (target: Object3D) => void;
+  onTargetFound: (target: THREE.Object3D) => void;
   onUserClick: (waypoint: string) => void;
   config: ProductConfig;
 }
@@ -158,7 +159,7 @@ interface InteriorModelProps {
 const InteriorModel: React.FC<InteriorModelProps> = ({ activeWaypoint, onTargetFound, onUserClick, config }) => {
   // Load the base interior (always present)
   const { scene: baseScene } = useGLTF(INTERIOR_URL);
-  const [waypoints, setWaypoints] = useState<{name: string, position: Vector3}[]>([]);
+  const [waypoints, setWaypoints] = useState<{name: string, position: THREE.Vector3}[]>([]);
 
   // 1. Resolve Cabinets URL
   const cabinetOption = CONFIG_DATA.find(c => c.id === ConfigCategory.INTERIOR)
@@ -176,7 +177,7 @@ const InteriorModel: React.FC<InteriorModelProps> = ({ activeWaypoint, onTargetF
 
   // Process Waypoints on the Base Scene
   useEffect(() => {
-    const foundWaypoints: {name: string, position: Vector3}[] = [];
+    const foundWaypoints: {name: string, position: THREE.Vector3}[] = [];
     baseScene.updateMatrixWorld(true);
 
     baseScene.traverse((child) => {
@@ -184,7 +185,7 @@ const InteriorModel: React.FC<InteriorModelProps> = ({ activeWaypoint, onTargetF
         child.visible = false;
       }
       if (child.name.includes('Waypoint')) {
-        const pos = new Vector3();
+        const pos = new THREE.Vector3();
         child.getWorldPosition(pos);
         foundWaypoints.push({ name: child.name, position: pos });
       }
@@ -228,7 +229,7 @@ const InteriorModel: React.FC<InteriorModelProps> = ({ activeWaypoint, onTargetF
 
 const ProductModel: React.FC<ProductModelProps> = ({ config, activeTab, resetTrigger, activeWaypoint = 'Waypoint1', onWaypointChange, onTransitionStateChange }) => {
   const { camera, controls } = useThree();
-  const [interiorTarget, setInteriorTarget] = useState<Object3D | null>(null);
+  const [interiorTarget, setInteriorTarget] = useState<THREE.Object3D | null>(null);
   
   let targetView: 'exterior' | 'interior' | 'floorplan' = 'exterior';
   if (activeTab === ConfigCategory.INTERIOR) targetView = 'interior';
@@ -265,15 +266,15 @@ const ProductModel: React.FC<ProductModelProps> = ({ config, activeTab, resetTri
   const showFloorplan = displayedView === 'floorplan';
   const showExterior = displayedView === 'exterior';
 
-  const defaultPos = new Vector3(0, 3, 16);
-  const defaultTarget = new Vector3(0, 1, 0);
+  const defaultPos = new THREE.Vector3(0, 3, 16);
+  const defaultTarget = new THREE.Vector3(0, 1, 0);
 
-  const savedExteriorPos = useRef(new Vector3().copy(defaultPos));
-  const savedExteriorTarget = useRef(new Vector3().copy(defaultTarget));
+  const savedExteriorPos = useRef(new THREE.Vector3().copy(defaultPos));
+  const savedExteriorTarget = useRef(new THREE.Vector3().copy(defaultTarget));
 
   const isInteriorTransitioning = useRef(false);
-  const interiorTargetPos = useRef(new Vector3());
-  const interiorLookAt = useRef(new Vector3());
+  const interiorTargetPos = useRef(new THREE.Vector3());
+  const interiorLookAt = useRef(new THREE.Vector3());
 
   useEffect(() => {
     const orb = controls as unknown as OrbitControlsImpl;
@@ -288,7 +289,7 @@ const ProductModel: React.FC<ProductModelProps> = ({ config, activeTab, resetTri
       camera.position.copy(defaultPos);
       orb.target.copy(defaultTarget);
       
-      if (camera instanceof PerspectiveCamera) {
+      if (camera instanceof THREE.PerspectiveCamera) {
           camera.fov = 22;
           camera.updateProjectionMatrix();
       }
@@ -303,7 +304,7 @@ const ProductModel: React.FC<ProductModelProps> = ({ config, activeTab, resetTri
       if (!orb) return;
       camera.position.copy(defaultPos);
       orb.target.copy(defaultTarget);
-      if (camera instanceof PerspectiveCamera) {
+      if (camera instanceof THREE.PerspectiveCamera) {
           camera.fov = 22;
           camera.updateProjectionMatrix();
       }
@@ -314,14 +315,14 @@ const ProductModel: React.FC<ProductModelProps> = ({ config, activeTab, resetTri
   useEffect(() => {
     if (showInterior && interiorTarget) {
       const orb = controls as unknown as OrbitControlsImpl;
-      const worldPos = new Vector3();
+      const worldPos = new THREE.Vector3();
       interiorTarget.getWorldPosition(worldPos);
-      const quaternion = new Quaternion();
+      const quaternion = new THREE.Quaternion();
       interiorTarget.getWorldQuaternion(quaternion);
-      const forward = new Vector3(0, 0, 1).applyQuaternion(quaternion);
+      const forward = new THREE.Vector3(0, 0, 1).applyQuaternion(quaternion);
       const targetCenter = worldPos.clone().add(forward.multiplyScalar(0.1));
 
-      if (camera instanceof PerspectiveCamera) {
+      if (camera instanceof THREE.PerspectiveCamera) {
         camera.setFocalLength(25);
         camera.updateProjectionMatrix();
       }
@@ -351,7 +352,7 @@ const ProductModel: React.FC<ProductModelProps> = ({ config, activeTab, resetTri
       orb.target.copy(defaultTarget);
       savedExteriorPos.current.copy(defaultPos);
       savedExteriorTarget.current.copy(defaultTarget);
-      if (camera instanceof PerspectiveCamera) {
+      if (camera instanceof THREE.PerspectiveCamera) {
           camera.fov = 22;
           camera.updateProjectionMatrix();
       }
