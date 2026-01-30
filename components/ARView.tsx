@@ -7,6 +7,14 @@ interface ARViewProps {
   onExit?: () => void;
 }
 
+declare global {
+  namespace JSX {
+    interface IntrinsicElements {
+      'model-viewer': any;
+    }
+  }
+}
+
 const AR_MODELS: Record<string, string> = {
   aluminum: 'https://gxgxlnorfuqagpfcbrsm.supabase.co/storage/v1/object/public/demo-assets/3d-assets/ar-alu.glb',
   red: 'https://gxgxlnorfuqagpfcbrsm.supabase.co/storage/v1/object/public/demo-assets/3d-assets/ar-red.glb',

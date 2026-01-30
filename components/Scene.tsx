@@ -9,6 +9,16 @@ import { triggerHaptic } from '../utils/haptics';
 // Initialize XR Store
 const store = createXRStore();
 
+declare global {
+  namespace JSX {
+    interface IntrinsicElements {
+      group: any;
+      ambientLight: any;
+      spotLight: any;
+    }
+  }
+}
+
 // Custom Loader Component
 const Loader = ({ forcedActive = false }: { forcedActive?: boolean }) => {
   const { active, progress } = useProgress();
