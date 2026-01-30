@@ -109,7 +109,7 @@ export const CONFIG_DATA: CategoryData[] = [
             colorCode: '#E0E0E0',
             icon: 'https://www.dropbox.com/scl/fi/efzaughr2p219kw9sv13e/Classic-Aluminium.webp?rlkey=2j6l24rvfv7igo4jr6gxguxod&dl=1',
             description: 'A professional, bright silver finish with a distinct horizontal brushed metal texture.',
-            modelUrl: 'https://dl.dropbox.com/scl/fi/9whp0impipzolgirc4z5r/ext-alu.glb?rlkey=7rjgvd2lh1vdpziew4nocw5lb&dl=1'
+            modelUrl: 'https://gxgxlnorfuqagpfcbrsm.supabase.co/storage/v1/object/public/demo-assets/3d-assets/ext-alu.glb'
           },
           { 
             id: 'red', 
@@ -117,7 +117,7 @@ export const CONFIG_DATA: CategoryData[] = [
             price: 3500,
             colorCode: '#8B0000',
             description: 'A bold, adventurous deep red matte finish.',
-            modelUrl: 'https://dl.dropbox.com/scl/fi/xykyfx86efwxb6821dd44/ext-red.glb?rlkey=day54kc3g371iq7kmqb1zxg1r&dl=1'
+            modelUrl: 'https://gxgxlnorfuqagpfcbrsm.supabase.co/storage/v1/object/public/demo-assets/3d-assets/ext-red.glb'
           },
           { 
             id: 'teal', 
@@ -125,7 +125,7 @@ export const CONFIG_DATA: CategoryData[] = [
             price: 2000,
             colorCode: '#008080',
             description: 'A calming, sea-inspired satin teal finish.',
-            modelUrl: 'https://dl.dropbox.com/scl/fi/4honghp9ii4a6t3c129fd/ext-teal.glb?rlkey=qplf4mti2t3busb4hx0zr8hbu&dl=1'
+            modelUrl: 'https://gxgxlnorfuqagpfcbrsm.supabase.co/storage/v1/object/public/demo-assets/3d-assets/ext-teal.glb'
           },
         ]
       },
@@ -139,21 +139,21 @@ export const CONFIG_DATA: CategoryData[] = [
             label: 'Off-Grid Solar', 
             price: 2500, 
             description: '300W Roof panels + Lithium battery bank.',
-            icon: 'https://www.dropbox.com/scl/fi/x1o4nnfxd24j41rfpvhhp/Solar-Grid.webp?rlkey=jq9muuf7tr1zpotpj5tq5oe6q&dl=1'
+            icon: 'https://gxgxlnorfuqagpfcbrsm.supabase.co/storage/v1/object/public/demo-assets/add-ons/Solar%20Grid.webp'
           },
           { 
             id: 'awning', 
             label: 'Power Awning', 
             price: 3500, 
             description: 'Full-length patio coverage with LED lighting.',
-            icon: 'https://www.dropbox.com/scl/fi/gq0jes2mh9ggen9mnb6i8/Power-Awning.webp?rlkey=e980d2axnsucu0gwdqe81hkpf&dl=1'
+            icon: 'https://gxgxlnorfuqagpfcbrsm.supabase.co/storage/v1/object/public/demo-assets/add-ons/Power%20Awning.webp'
           },
           { 
             id: 'rack', 
             label: 'Gear Rack System', 
             price: 1200, 
             description: 'Rear mount for bikes and kayaks.',
-            icon: 'https://www.dropbox.com/scl/fi/bowsbporgsjni56rutasq/Gear-Rack.webp?rlkey=wfyr8mnc2t4h2sabcp3cr2u4b&dl=1'
+            icon: 'https://gxgxlnorfuqagpfcbrsm.supabase.co/storage/v1/object/public/demo-assets/add-ons/Gear%20Rack.webp'
           },
         ]
       }
@@ -172,24 +172,24 @@ export const CONFIG_DATA: CategoryData[] = [
             label: 'Pebble Grey', 
             price: 0, 
             description: 'Soft, neutral grey fabrics for a modern, airy feel.',
-            icon: 'https://dl.dropbox.com/scl/fi/1z3bw5cjqrz2bi7318rf9/Pebble.jpg?rlkey=hgtgual1ajksajhwnvrv8uogt&dl=1',
-            modelUrl: 'https://dl.dropbox.com/scl/fi/0gmudfs0k6jas3e30wdaz/uph-pebble.glb?rlkey=ue0goy58gjl0w2sh3g2itbhfh&dl=1'
+            icon: 'https://gxgxlnorfuqagpfcbrsm.supabase.co/storage/v1/object/public/demo-assets/uph-finishes/Pebble.jpg',
+            modelUrl: 'https://gxgxlnorfuqagpfcbrsm.supabase.co/storage/v1/object/public/demo-assets/3d-assets/uph-pebble.glb'
           },
           { 
             id: 'ivory', 
             label: 'Ivory Cream', 
             price: 1500, 
             description: 'Luxurious cream textiles for a bright, elegant interior.',
-            icon: 'https://dl.dropbox.com/scl/fi/01z3oxfgge4i3tk6jqd5r/Ivory.jpg?rlkey=vnqgh6r6odcju4255r3v7mbsa&dl=1',
-            modelUrl: 'https://dl.dropbox.com/scl/fi/ez2y89quhjpo5evj8luht/uph-ivory.glb?rlkey=y0zydti6zgcpftqryw7pe2dmm&dl=1'
+            icon: 'https://gxgxlnorfuqagpfcbrsm.supabase.co/storage/v1/object/public/demo-assets/uph-finishes/Ivory.jpg',
+            modelUrl: 'https://gxgxlnorfuqagpfcbrsm.supabase.co/storage/v1/object/public/demo-assets/3d-assets/uph-ivory.glb'
           },
           { 
             id: 'blossom', 
             label: 'Cherry Blossom', 
             price: 2500, 
             description: 'Warm, inviting pink tones for a unique, cozy atmosphere.',
-            icon: 'https://dl.dropbox.com/scl/fi/cnis9s2cbpk1zut2rosvq/Blossom.png?rlkey=i85mim45edeyzi8hkquc8puq3&dl=1',
-            modelUrl: 'https://dl.dropbox.com/scl/fi/bc6zg73z39r24vrir3ju2/uph-blossom.glb?rlkey=zash8mbejya09i6np8647ci18&dl=1'
+            icon: 'https://gxgxlnorfuqagpfcbrsm.supabase.co/storage/v1/object/public/demo-assets/uph-finishes/Blossom.png',
+            modelUrl: 'https://gxgxlnorfuqagpfcbrsm.supabase.co/storage/v1/object/public/demo-assets/3d-assets/uph-blossom.glb'
           },
         ]
       },
@@ -203,24 +203,24 @@ export const CONFIG_DATA: CategoryData[] = [
             label: 'Natural Oak', 
             price: 0, 
             description: 'Light, organic wood finish.',
-            icon: 'https://dl.dropbox.com/scl/fi/cvfjbnc1aseiyax7wfp4h/Oak.jpg?rlkey=xxsgslx6fphukwwt4tt9bropb&dl=1',
-            modelUrl: 'https://dl.dropbox.com/scl/fi/12xpge7rvarwykcdvujvn/int-wood-oak.glb?rlkey=j0i7ek23boootva7ep3oewdqc&dl=1'
+            icon: 'https://gxgxlnorfuqagpfcbrsm.supabase.co/storage/v1/object/public/demo-assets/wood-finishes/Oak.jpg',
+            modelUrl: 'https://gxgxlnorfuqagpfcbrsm.supabase.co/storage/v1/object/public/demo-assets/3d-assets/int-wood-oak.glb'
           },
           { 
             id: 'walnut', 
             label: 'Deep Walnut', 
             price: 800, 
             description: 'Rich, dark wood grain.',
-            icon: 'https://dl.dropbox.com/scl/fi/8gipxmldaw1hapg1mq7vk/Walnut.jpg?rlkey=ca6d0gp3lskydr4delhq0cb4t&dl=1',
-            modelUrl: 'https://dl.dropbox.com/scl/fi/qv2ftzf2qr63dn7e8gkco/int-wood-walnut.glb?rlkey=z7aayr5fgoy4xhuez5zzm2qpu&dl=1'
+            icon: 'https://gxgxlnorfuqagpfcbrsm.supabase.co/storage/v1/object/public/demo-assets/wood-finishes/Walnut.jpg',
+            modelUrl: 'https://gxgxlnorfuqagpfcbrsm.supabase.co/storage/v1/object/public/demo-assets/3d-assets/int-wood-walnut.glb'
           },
           { 
             id: 'modern_gray', 
             label: 'Modern Gray', 
             price: 500, 
             description: 'Sleek, painted minimalist finish.',
-            icon: 'https://dl.dropbox.com/scl/fi/op9i56x61tz6vtf2uoooq/Modern-Grey.jpg?rlkey=dz0pc51x1i19itam3oq9812k5&dl=1',
-            modelUrl: 'https://dl.dropbox.com/scl/fi/7dlfl1ezuoqofjl5czoqj/int-wood-grey.glb?rlkey=c1amt3s2wpbgux6gbqvlofrry&dl=1'
+            icon: 'https://gxgxlnorfuqagpfcbrsm.supabase.co/storage/v1/object/public/demo-assets/wood-finishes/Modern%20Grey.jpg',
+            modelUrl: 'https://gxgxlnorfuqagpfcbrsm.supabase.co/storage/v1/object/public/demo-assets/3d-assets/int-wood-grey.glb'
           },
         ]
       }
